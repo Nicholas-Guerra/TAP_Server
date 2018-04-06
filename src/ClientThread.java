@@ -24,12 +24,18 @@ public class ClientThread implements Runnable {
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new PrintWriter(client.getOutputStream(), true);
 
+            JSONObject object = new JSONObject(in.readLine());
 
-            JSONArray read = new JSONArray(in.readLine());
-            JSONObject object = read.getJSONObject(0);
-            System.out.println(object.get("Test"));
-
-
+            String request = object.getString("Request");
+            if(request.equalsIgnoreCase("Login")){
+                ParseRequest.parseLogin(object);
+            } else if(request.equalsIgnoreCase("NewUser")){
+                ParseRequest.parseNewUser(object);
+            } else if(request.equalsIgnoreCase("Transaction")){
+                ParseRequest.parseTransaction(object);
+            } else if(request.equalsIgnoreCase("History")){
+                ParseRequest.parseHistory(object);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
