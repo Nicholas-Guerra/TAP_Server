@@ -28,13 +28,13 @@ public class ClientThread implements Runnable {
 
             String request = object.getString("Request");
             if(request.equalsIgnoreCase("Login")){
-                ParseRequest.parseLogin(object);
+                ParseRequest.parseLogin(object, in, out);
             } else if(request.equalsIgnoreCase("NewUser")){
-                ParseRequest.parseNewUser(object);
+                ParseRequest.parseNewUser(object, in, out);
             } else if(request.equalsIgnoreCase("Transaction")){
-                ParseRequest.parseTransaction(object);
+                ParseRequest.parseTransaction(object, in, out);
             } else if(request.equalsIgnoreCase("History")){
-                ParseRequest.parseHistory(object);
+                ParseRequest.parseHistory(object, in, out);
             }
 
         } catch (IOException e) {
