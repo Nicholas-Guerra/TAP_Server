@@ -6,13 +6,13 @@ import java.io.*;
 import java.net.Socket;
 
 
-public class ClientThread implements Runnable {
+public class ServerThread implements Runnable {
     private Socket client;
     BufferedReader in;
     PrintWriter out;
 
 
-    public ClientThread( Socket client) {
+    public ServerThread(Socket client) {
         this.client = client;
     }
 
@@ -41,6 +41,7 @@ public class ClientThread implements Runnable {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+
         }
 
 
