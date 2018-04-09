@@ -45,9 +45,28 @@ public class ParseRequest {
     public void parseNewUser(JSONObject request, BufferedReader in, PrintWriter out){
         System.out.println("New User Request");
 
+        try {
+            String userId = request.getString("userID");
+            String hashedPassword = request.getString("hashedPassword");
+            String email = request.getString("email");
+            int phoneNumber = request.getInt("phoneNumber");
+            //String cryptoID = request.getString( key: "cryptoID");
+            //String cryptoPrivateKey = request.getString( key: "cryptoPrivateKey")
+            //String cryptoPublicKey = request.getString("cryptoPublicKey");
+            //Double balance = request.getString("balance");
+            String userName = request.getString("userName");
 
-        database.runUpdate("INSERT INTO AccountInfo(userID,hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
-                "VALUES (1234, 'kjsbfskajbd','1234','privates','publics',12.00,'bill@gamil.com','Bill',9727898762 )");
+
+
+
+             database.runUpdate("INSERT INTO AccountInfo(userID,hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
+                "VALUES ('" + userId + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email +"','"userName"','phoneNumber' )");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public void parseTransaction(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
