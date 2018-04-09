@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
 public class ParseRequest {
 
     Database database;
@@ -31,6 +32,7 @@ public class ParseRequest {
                 System.out.println( "UserID = " + id );
                 System.out.println( "Hashed Password = " + password );
                 System.out.println();
+
 
             } catch (SQLException e) {
                 e.printStackTrace();

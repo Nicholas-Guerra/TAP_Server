@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.SQLException;
 
 
 public class ServerThread implements Runnable {
@@ -44,7 +45,8 @@ public class ServerThread implements Runnable {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
-
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
 

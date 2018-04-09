@@ -13,7 +13,7 @@ public class Database {
         }
     }
 
-    public synchronized void runUpdate(String sqlStatement) {
+    public void runUpdate(String sqlStatement) {
 
         try {
             Statement statement = connection.createStatement();
@@ -28,7 +28,7 @@ public class Database {
 
 
 
-        public synchronized ResultSet runQuery(String sqlStatement){
+    public ResultSet runQuery(String sqlStatement){
 
         try {
             Statement statement = connection.createStatement();
