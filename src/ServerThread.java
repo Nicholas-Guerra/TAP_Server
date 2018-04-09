@@ -10,10 +10,12 @@ public class ServerThread implements Runnable {
     private Socket client;
     BufferedReader in;
     PrintWriter out;
+    Database database;
 
 
-    public ServerThread(Socket client) {
+    public ServerThread(Socket client, Database database) {
         this.client = client;
+        this.database = database;
     }
 
     @Override
@@ -27,14 +29,15 @@ public class ServerThread implements Runnable {
             JSONObject object = new JSONObject(in.readLine());
 
             String request = object.getString("Request");
+
             if(request.equalsIgnoreCase("Login")){
-                ParseRequest.parseLogin(object, in, out);
+                new ParseRequest(database).parseLogin(object, in, out);
             } else if(request.equalsIgnoreCase("NewUser")){
-                ParseRequest.parseNewUser(object, in, out);
+                new ParseRequest(database).parseNewUser(object, in, out);
             } else if(request.equalsIgnoreCase("Transaction")){
-                ParseRequest.parseTransaction(object, in, out);
+                new ParseRequest(database).parseTransaction(object, in, out);
             } else if(request.equalsIgnoreCase("History")){
-                ParseRequest.parseHistory(object, in, out);
+                new ParseRequest(database).parseHistory(object, in, out);
             }
 
         } catch (IOException e) {

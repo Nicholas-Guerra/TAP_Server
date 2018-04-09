@@ -6,17 +6,25 @@ import java.io.PrintWriter;
 
 public class ParseRequest {
 
+    Database database;
 
-
-    public static void parseLogin(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
-        System.out.println("Login Request");
+    public ParseRequest(Database database){
+        this.database = database;
     }
 
-    public static void parseNewUser(JSONObject request, BufferedReader in, PrintWriter out){
+
+
+    public void parseLogin(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
+        System.out.println("Login Request");
+
+
+    }
+
+    public void parseNewUser(JSONObject request, BufferedReader in, PrintWriter out){
         System.out.println("New User Request");
     }
 
-    public static void parseTransaction(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
+    public void parseTransaction(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
         System.out.println("Transaction Request");
 
         JSONObject send = new JSONObject();
@@ -24,7 +32,7 @@ public class ParseRequest {
         out.println(send.toString());
     }
 
-    public static void parseHistory(JSONObject request, BufferedReader in, PrintWriter out){
+    public void parseHistory(JSONObject request, BufferedReader in, PrintWriter out){
         System.out.println("History Request");
     }
 

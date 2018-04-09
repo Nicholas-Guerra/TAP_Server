@@ -10,6 +10,11 @@ public class Main {
         System.setProperty("javax.net.ssl.keyStore", "keystore.keystore");
         System.setProperty("javax.net.ssl.keyStorePassword", "123456");
 
+        Database database = new Database();
+
+        database.runUpdate("INSERT INTO AccountInfo(userID,hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
+                                       "VALUES ('kjsbfskajbd','12343','private','public',12.00,'bill@gamil.com','Bill',9727898762 );");
+
         try {
             ServerSocketFactory serverSocketFactory = SSLServerSocketFactory.getDefault();
             SSLServerSocket server = (SSLServerSocket) serverSocketFactory.createServerSocket(9099);
@@ -19,7 +24,7 @@ public class Main {
                 server.setSoTimeout(0);
                 client = server.accept();
 
-                new Thread(new ServerThread(client)).start();
+                new Thread(new ServerThread(client, database)).start();
 
             }
         } catch (IOException e) {
