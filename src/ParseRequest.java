@@ -57,8 +57,8 @@ public class ParseRequest {
             String userName = request.getString("userName");
 
 
-            database.runUpdate("INSERT INTO AccountInfo(userID,hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
-                    "VALUES ('" + userId + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "','"userName"','phoneNumber' )");
+            //database.runUpdate("INSERT INTO AccountInfo(userID,hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
+                    //"VALUES ('" + userId + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "','"userName"','phoneNumber' )");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -82,31 +82,30 @@ public class ParseRequest {
 
             JSONArray array = new JSONArray();
             JSONObject object;
-            ResultSet resultSet = database.runQuery("");
+
+            ResultSet resultSet = database
+                    .runQuery("SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
+                                        "FROM Transactions JOIN AccountInfo" +
+                                        "ON Transactions.senderID = AccountInfo.userID" +
+                                        "WHERE Transactions.senderID != " + userID  +
+                                        "UNION" +
+                                        "SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
+                                        "FROM Transactions JOIN AccountInfo" +
+                                        "ON Transactions.receiverID = AccountInfo.userID" +
+                                        "WHERE Transactions.receiverID  != " + userID);
+
+
             // Get transaction where (uid = senderId or uid = receiverID) && update = true
             double amount;
             while (resultSet.next()) {
                 object = new JSONObject();
 
-                amount = resultSet.getDouble("smount");
+                amount = resultSet.getDouble("amount");
                 if (userID.equals(resultSet.getString("senderID")))
                     amount *= -1;
 
-                //do query to get sender or receiver name
-                ResultSet resultSet2;
-                if (userID.equals(resultSet.getString("senderID"))) {
-                    //get username for receiver id
-                    resultSet2 = database.runQuery("");
-                } else {
-                    //get username for sender id
-                    resultSet2 = database.runQuery("");
-                }
-                //
-                resultSet2.next();
-                String userName = resultSet2.getString("userName");
-
                 object.put("transactionID", resultSet.getString("transactionID"))
-                        .put("to_from", userName)
+                        .put("to_from", resultSet.getString("Username"))
                         .put("status", resultSet.getString("status"))
                         .put("amount", amount);
 
@@ -117,7 +116,9 @@ public class ParseRequest {
             object = new JSONObject();
             object.put("array", array);
 
-            out.println(object.toString());
+
+            System.out.println(object.toString());
+            //out.println(object.toString());
 
         } catch (JSONException e) {
             e.printStackTrace();
