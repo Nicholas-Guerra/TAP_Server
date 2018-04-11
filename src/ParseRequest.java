@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 
 public class ParseRequest {
@@ -46,7 +47,7 @@ public class ParseRequest {
         System.out.println("New User Request");
 
         try {
-            String userId = request.getString("userID");
+            String userId = UUID.randomUUID().toString();
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             int phoneNumber = request.getInt("phoneNumber");
@@ -107,7 +108,8 @@ public class ParseRequest {
                 object.put("transactionID", resultSet.getString("transactionID"))
                         .put("to_from", resultSet.getString("Username"))
                         .put("status", resultSet.getString("status"))
-                        .put("amount", amount);
+                        .put("amount", amount)
+                        .put("time", resultSet.getLong("time"));
 
                 array.put(object);
 
