@@ -128,6 +128,10 @@ public class ParseRequest {
         System.out.println("Transaction Request");
 //sender, receiver, amount
 
+         ResultSet maxTransactionID = database.runQuery(
+                .runQuery("SELECT transactionID" +
+                        "FROM Transactions" +
+                        "WHERE TransactionID = (select max(TransactionID)) ");
 
         JSONObject send = new JSONObject();
         String sender = request.getString("sender");
@@ -135,6 +139,7 @@ public class ParseRequest {
         Double amount = request.getDouble("amount");
         Long time = System.currentTimeMillis();
         String status = "pending";
+        int TransactionID = Integer.parseInt(maxTransactionID) + 1;
 
         database.runUpdate("INSERT Transactions" +
                         "SET sender = " + sender + ", receiver = " + receiver + ", amount = " + amount + ", time = " + time + ", status = " + status);
