@@ -58,10 +58,23 @@ public class ParseRequest {
             String userName = request.getString("userName");
 
 
-            //database.runUpdate("INSERT INTO AccountInfo(userID,hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
-                    //"VALUES ('" + userId + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "','"userName"','phoneNumber' )");
+            //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
+            //        " VALUES (" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "','"userName"','phoneNumber' )" +
+            //        " SELECT last_insert_rowid()");
+
+            //resultSet.next();
+            //String id = resultSet.getString("userID");
+
+
+
+
+
+
+
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
