@@ -126,12 +126,28 @@ public class ParseRequest {
 
     public void parseTransaction(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
         System.out.println("Transaction Request");
-
+//sender, receiver, amount
 
 
         JSONObject send = new JSONObject();
+        String sender = request.getString("sender");
+        String receiver = request.getString("receiver");
+        Double amount = request.getDouble("amount");
+        Long time = System.currentTimeMillis();
+        String status = "pending";
+
+        database.runUpdate("INSERT Transactions" +
+                        "SET sender = " + sender + ", receiver = " + receiver + ", amount = " + amount + ", time = " + time + ", status = " + status);
+
+
+
         send.put("Status", "Completed Transaction");
         out.println(send.toString());
+
+
+
+
+
     }
 
     public void parseHistory(JSONObject request, BufferedReader in, PrintWriter out) {
