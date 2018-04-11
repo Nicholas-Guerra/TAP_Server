@@ -66,7 +66,7 @@ public class ParseRequest {
         System.out.println("New User Request");
 
         try {
-            String userId = UUID.randomUUID().toString();
+            //String userId = UUID.randomUUID().toString();
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             int phoneNumber = request.getInt("phoneNumber");
@@ -127,6 +127,8 @@ public class ParseRequest {
     public void parseTransaction(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
         System.out.println("Transaction Request");
 
+
+
         JSONObject send = new JSONObject();
         send.put("Status", "Completed Transaction");
         out.println(send.toString());
@@ -135,7 +137,7 @@ public class ParseRequest {
     public void parseHistory(JSONObject request, BufferedReader in, PrintWriter out) {
         //transactionID, sender, receiver, status, amount, senderOrReceiver(receiveristrue)
         try {
-            String userID = request.getString("UID");
+            String username = request.getString("username");
 
             JSONArray array = new JSONArray();
             JSONObject object;
@@ -144,12 +146,12 @@ public class ParseRequest {
                     .runQuery("SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         "FROM Transactions JOIN AccountInfo" +
                                         "ON Transactions.senderID = AccountInfo.userID" +
-                                        "WHERE Transactions.senderID != " + userID  +
+                                        "WHERE Transactions.sender != " + username  +
                                         "UNION" +
                                         "SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         "FROM Transactions JOIN AccountInfo" +
                                         "ON Transactions.receiverID = AccountInfo.userID" +
-                                        "WHERE Transactions.receiverID  != " + userID);
+                                        "WHERE Transactions.receiver  != " + username);
 
 
             // Get transaction where (uid = senderId or uid = receiverID) && update = true
@@ -158,7 +160,7 @@ public class ParseRequest {
                 object = new JSONObject();
 
                 amount = resultSet.getDouble("amount");
-                if (userID.equals(resultSet.getString("senderID")))
+                if (username.equals(resultSet.getString("sender")))
                     amount *= -1;
 
                 object.put("transactionID", resultSet.getString("transactionID"))
