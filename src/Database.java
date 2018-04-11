@@ -13,7 +13,7 @@ public class Database {
         }
     }
 
-    public void runUpdate(String sqlStatement) {
+    public String runUpdate(String sqlStatement) {
 
         try {
             Statement statement = connection.createStatement();

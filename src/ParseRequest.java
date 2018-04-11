@@ -2,11 +2,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Random;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
+
+import javax.xml.crypto.Data;
 
 
 public class ParseRequest {
@@ -22,25 +25,41 @@ public class ParseRequest {
 
         System.out.println("Login Request");
 
-        ResultSet resultSet = database.runQuery("Select * From AccountInfo");
+        //ResultSet resultSet = database.runQuery("Select * From AccountInfo");
 
-        while (resultSet.next()) {
+      //  while (resultSet.next()) {
             try {
-                int id = resultSet.getInt("userId");
-                String password = resultSet.getString("hashedPassword");
+           /*     int id = resultSet.getInt("userId");
+                String password = resultSet.getString("hashedPassword");*/
+                String userName = request.getString("userName");
+                String hashedPassword = request.getString("hashedPassword");
 
 
-                System.out.println("UserID = " + id);
-                System.out.println("Hashed Password = " + password);
-                System.out.println();
+                ResultSet passwordCheck = database.runQuery(
+                        .runQuery("SELECT hashedPassword" +
+                                "FROM AccountInfo" +
+                                "WHERE userName = " + userName);
 
+                if(!passwordCheck.next()) {
+                    //username wrong
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("status", "error")
+                            .put("message" "Wrong Username");
+                    out.println(jsonObject.toString());
+                } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
+                    //wrong pass
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("status", "error")
+                            .put("message", "Wrong Password");
+                    out.println(jsonObject.toString());
+                } else {
+                    //success
+                }
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-
         }
-
     }
 
     public void parseNewUser(JSONObject request, BufferedReader in, PrintWriter out) {
@@ -58,27 +77,51 @@ public class ParseRequest {
             String userName = request.getString("userName");
 
 
-            //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
-            //        " VALUES (" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "','"userName"','phoneNumber' )" +
-            //        " SELECT last_insert_rowid()");
 
-            //resultSet.next();
-            //String id = resultSet.getString("userID");
+            ResultSet userCheck = database.runQuery(
+                    .runQuery("SELECT userName" +
+                            "FROM AccountInfo" +
+                            "WHERE userName = " + userName);
 
+            ResultSet emailCheck = database.runQuery(
+                    .runQuery("SELECT email" +
+                            "FROM AccountInfo" +
+                            "WHERE email = " + email);
 
+            if (!emailCheck.isBeforeFirst() && !userCheck.isBeforeFirst()){
+                double start = 5;
+                double end = 100;
+                double random = new Random().nextDouble();
+                double result = start + (random * (end - start));
+                double balance = result;
+                //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,userName,phoneNumber)" +
+                //        " VALUES (" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "','"userName"','phoneNumber' )" +
+                //        " SELECT last_insert_rowid()");
+                //resultSet.next();
+                //String id = resultSet.getString("userID");
 
-
-
-
-
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("status", "verified")
+             //           .put("UID", id)
+                        .put("balance", balance);
+                out.println(jsonObject.toString());
+            } else if (userCheck.isBeforeFirst()) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("status", "error")
+                        .put("message", "Username already in use");
+                out.println(jsonObject.toString());
+            }else if (emailCheck.isBeforeFirst()) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("status", "error")
+                            .put("message", "Email already in use");
+                    out.println(jsonObject.toString());
+                }
 
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
     }
 
     public void parseTransaction(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
@@ -140,7 +183,6 @@ public class ParseRequest {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
 
         System.out.println("History Request");
     }
