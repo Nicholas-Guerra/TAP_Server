@@ -139,10 +139,12 @@ public class ParseRequest {
         Double amount = request.getDouble("amount");
         Long time = System.currentTimeMillis();
         String status = "pending";
-        int TransactionID = Integer.parseInt(maxTransactionID) + 1;
+        String
 
-        database.runUpdate("INSERT Transactions" +
-                        "SET sender = " + sender + ", receiver = " + receiver + ", amount = " + amount + ", time = " + time + ", status = " + status);
+        //int TransactionID = Integer.parseInt(maxTransactionID) + 1;
+
+        database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+                        "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
 
 
