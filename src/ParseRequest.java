@@ -44,7 +44,7 @@ public class ParseRequest {
                     //username wrong
                     JSONObject jsonObject = new JSONObject();
                     jsonObject.put("status", "error")
-                            .put("message" "Wrong Username");
+                            .put("message","Wrong Username");
                     out.println(jsonObject.toString());
                 } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
                     //wrong pass
@@ -139,7 +139,7 @@ public class ParseRequest {
         Double amount = request.getDouble("amount");
         Long time = System.currentTimeMillis();
         String status = "pending";
-        String
+        //String
 
         //int TransactionID = Integer.parseInt(maxTransactionID) + 1;
 
@@ -150,8 +150,6 @@ public class ParseRequest {
 
         send.put("Status", "Completed Transaction");
         out.println(send.toString());
-
-
 
 
 
@@ -187,7 +185,7 @@ public class ParseRequest {
                     amount *= -1;
 
                 object.put("transactionID", resultSet.getString("transactionID"))
-                        .put("to_from", resultSet.getString("Username"))
+                        .put("to_from", resultSet.getString("username"))
                         .put("status", resultSet.getString("status"))
                         .put("amount", amount)
                         .put("time", resultSet.getLong("time"));
@@ -210,5 +208,30 @@ public class ParseRequest {
         }
 
         System.out.println("History Request");
+    }
+
+    public void updateToken(JSONObject request, BufferedReader in, PrintWriter out){
+
+        JSONObject send = new JSONObject();
+        try {
+            String usernName = request.getString("userName");
+
+            String token = request.getString("token");
+
+            //update token variable = to string that Nick sent
+            database.runUpdate("INSERT into AccountInfo (token)" +
+                    "Values( " + token + ")");
+
+            send.put("status", "Updated!");
+            out.println(send.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
     }
 }
