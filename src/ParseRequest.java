@@ -2,11 +2,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Random;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.net.ssl.HttpsURLConnection;
 import javax.xml.crypto.Data;
 
 
@@ -18,7 +22,7 @@ public class ParseRequest {
         this.database = database;
     }
 
-    public void parseLogin(JSONObject request, BufferedReader in, PrintWriter out){
+    public void parseLogin(JSONObject request, PrintWriter out){
 
         System.out.println("Login Request");
 
@@ -43,8 +47,8 @@ public class ParseRequest {
                     //username wrong
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("status", "error")
-                                .put("message","Wrong Username");
+                        jsonObject.put("Status", "Incomplete")
+                                .put("Message","Wrong Username");
                         out.println(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -54,8 +58,8 @@ public class ParseRequest {
                     //wrong pass
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("status", "error")
-                                .put("message", "Wrong Password");
+                        jsonObject.put("Status", "Incomplete")
+                                .put("Message", "Wrong Password");
                         out.println(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -63,8 +67,8 @@ public class ParseRequest {
                 } else {
                     JSONObject jsonObject = new JSONObject();
                     try {
-                        jsonObject.put("status", "No errors")
-                                  .put("messasge", "Success!");
+                        jsonObject.put("Status", "Complete")
+                                  .put("Message", "Success!");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -74,7 +78,7 @@ public class ParseRequest {
             }
         }
 
-    public void parseNewUser(JSONObject request, BufferedReader in, PrintWriter out) {
+    public void parseNewUser(JSONObject request, PrintWriter out) {
         System.out.println("New User Request");
 
         try {
@@ -109,7 +113,6 @@ public class ParseRequest {
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "verified")
-             //           .put("UID", id)
                         .put("balance", balance);
                 out.println(jsonObject.toString());
             } else if (userCheck.isBeforeFirst()) {
@@ -132,29 +135,50 @@ public class ParseRequest {
 
     }
 
-    public void parseTransaction(JSONObject request, BufferedReader in, PrintWriter out) throws JSONException {
-        System.out.println("Transaction Request");
-//sender, receiver, amount
+    public void parseTransaction(JSONObject request, PrintWriter out) {
 
-         ResultSet maxTransactionID = database.runQuery("SELECT transactionID" +
-                        "FROM Transactions" +
-                        "WHERE TransactionID = (select max(TransactionID)) ");
+        try {
 
-        JSONObject send = new JSONObject();
-        String sender = request.getString("sender");
-        String receiver = request.getString("receiver");
-        Double amount = request.getDouble("amount");
-        Long time = System.currentTimeMillis();
-        String status = "pending";
+            JSONObject send = new JSONObject();
+            String sender = request.getString("sender");
+            String receiver = request.getString("receiver");
+            Double amount = request.getDouble("amount");
+            Long time = System.currentTimeMillis();
+            String status = "pending";
 
-        database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + sender + "'");
+            resultSet.next();
+
+            if(resultSet.getDouble("amount") >= amount) {
+
+                database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
                         "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
-        send.put("Status", "Completed Transaction");
-        out.println(send.toString());
+                database.runUpdate("UPDATE AccountInfo SET amount = amount - " + amount +
+                        " WHERE userName = '" + sender + "'");
+
+                database.runUpdate("UPDATE AccountInfo SET amount = amount + " + amount +
+                        " WHERE userName = '" + receiver + "'");
+
+                send.put("Status", "Complete");
+                out.println(send.toString());
+            } else{
+                send.put("Status", "Incomplete")
+                        .put("Message", "Insufficient funds");
+                out.println(send.toString());
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
-    public void parseHistory(JSONObject request, BufferedReader in, PrintWriter out) {
+    public void parseHistory(JSONObject request, PrintWriter out) {
         try {
             String username = request.getString("username");
 
@@ -163,14 +187,14 @@ public class ParseRequest {
 
             ResultSet resultSet = database
                     .runQuery("SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
-                                        "FROM Transactions JOIN AccountInfo" +
-                                        "ON Transactions.senderID = AccountInfo.userID" +
-                                        "WHERE Transactions.sender != " + username  +
-                                        "UNION" +
-                                        "SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
-                                        "FROM Transactions JOIN AccountInfo" +
-                                        "ON Transactions.receiverID = AccountInfo.userID" +
-                                        "WHERE Transactions.receiver  != " + username);
+                                        " FROM Transactions JOIN AccountInfo" +
+                                        " ON Transactions.senderID = AccountInfo.userID" +
+                                        " WHERE Transactions.sender != '" + username  + "'" +
+                                        " UNION" +
+                                        " SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
+                                        " FROM Transactions JOIN AccountInfo" +
+                                        " ON Transactions.receiverID = AccountInfo.userID" +
+                                        " WHERE Transactions.receiver  != '" + username + "'");
 
 
 
@@ -193,6 +217,7 @@ public class ParseRequest {
             }
 
             object = new JSONObject();
+            object.put("Status", "Complete");
             object.put("array", array);
 
 
@@ -207,19 +232,19 @@ public class ParseRequest {
         System.out.println("History Request");
     }
 
-    public void updateToken(JSONObject request, BufferedReader in, PrintWriter out){
+    public void updateToken(JSONObject request, PrintWriter out){
 
-        JSONObject send = new JSONObject();
+
         try {
             String userName = request.getString("userName");
-
             String token = request.getString("token");
 
             //update token variable = to string that Nick sent
-            database.runUpdate("INSERT into AccountInfo (token)" +
-                    "Values( " + token + ")");
+            database.runUpdate("UPDATE AccountInfo SET token = " + token +
+                    " WHERE userName = '" + userName +"'");
 
-            send.put("status", "Updated!");
+            JSONObject send = new JSONObject();
+            send.put("Status", "Complete");
             out.println(send.toString());
 
         } catch (JSONException e) {
@@ -228,7 +253,7 @@ public class ParseRequest {
 
     }
 
-    public void userRequest(JSONObject request, BufferedReader in, PrintWriter out){
+    public void userRequest(JSONObject request, PrintWriter out){
         //
         JSONArray array = new JSONArray();
 
@@ -240,20 +265,19 @@ public class ParseRequest {
                     "SELECT userName" +
                                 "FROM AccountInfo" +
                                 "WHERE user LIKE " + search);
+
+
             JSONObject object;
             while (users.next()) {
                 object = new JSONObject();
-                try {
-                    object.put("userName", users.getString("userName"));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                object.put("userName", users.getString("userName"));
                 array.put(object);
 
             }
 
             object = new JSONObject();
-            object.put("Array", array);
+            object.put("Status", "Complete")
+                    .put("Array", array);
 
             out.println(object.toString());
 
@@ -265,16 +289,73 @@ public class ParseRequest {
 
     }
 
-    public void sendNotification(JSONObject request, BufferedReader in, PrintWriter out){
+    public void sendNotification(JSONObject request,  PrintWriter out){
 
         JSONObject send = new JSONObject();
         try {
-            String userName = request.getString("userName");
+            String from = request.getString("from");
+            String to = request.getString("to");
+            double amount = request.getDouble("amount");
+            Long time = System.currentTimeMillis();
 
-            send.put("notifications", "New notifications!");
+            ResultSet resultSet = database.runQuery("SELECT token " +
+                                                "FROM AccountInfo " +
+                                                "WHERE userName = " + to);
+
+            resultSet.next();
+            String token = resultSet.getString("token");
+
+            database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+                    "Values('" + from + "','" + to + "', " + amount + "," + String.valueOf(time) + ", 'Waiting')");
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL myurl = new URL("https://fcm.googleapis.com/fcm/send");
+                        HttpsURLConnection con = (HttpsURLConnection)myurl.openConnection();
+                        con.setDoOutput(true);
+                        con.setRequestMethod("POST");
+
+                        con.setRequestProperty("Content-Type", "application/json");
+                        con.setRequestProperty("Authorization", "key=AAAAvDSzk-s:APA91bEpIUE5NHy-axptjiaSxB5_waxCyH95UuXzw0HM_Sg7UR33pJRrc_AzQH5AxrS38BAqgVlD1Vfj3OeB4oce2IWwfMmMpOiauv9Ssvm32PzgkhAG-Wdu_PpJmCWVnGT7OD2fAjIq");
+
+                        JSONObject object = new JSONObject();
+                        JSONObject data = new JSONObject();
+                        data.put("User Name", "Sally")
+                                .put("Amount", "41.28")
+                                .put("Date", "1523831301798");
+
+                        object.put("to", token)
+                                .put("data", data);
+
+                        OutputStream outputStream = con.getOutputStream();
+                        outputStream.write(object.toString().getBytes());
+                        outputStream.flush();
+
+                        int responseCode = con.getResponseCode();
+                        System.out.println("PostRequest: Sending 'POST' request");
+                        System.out.println("PostRequest: Response Code : " + responseCode+" "+con.getResponseMessage());
+
+
+                        outputStream.close();
+
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+
+            send.put("Status", "Complete");
             out.println(send.toString());
 
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 

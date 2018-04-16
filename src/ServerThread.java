@@ -32,19 +32,19 @@ public class ServerThread implements Runnable {
             String request = object.getString("Request");
 
             if(request.equalsIgnoreCase("Login")){
-                new ParseRequest(database).parseLogin(object, in, out);
+                new ParseRequest(database).parseLogin(object, out);
             } else if(request.equalsIgnoreCase("NewUser")){
-                new ParseRequest(database).parseNewUser(object, in, out);
+                new ParseRequest(database).parseNewUser(object, out);
             } else if(request.equalsIgnoreCase("Transaction")){
-                new ParseRequest(database).parseTransaction(object, in, out);
+                new ParseRequest(database).parseTransaction(object, out);
             } else if(request.equalsIgnoreCase("History")){
-                new ParseRequest(database).parseHistory(object, in, out);
+                new ParseRequest(database).parseHistory(object, out);
             } else if(request.equalsIgnoreCase("updateToken")){
-                new ParseRequest(database).updateToken(object, in, out);
+                new ParseRequest(database).updateToken(object, out);
             } else if(request.equalsIgnoreCase("userRequest")){
-                new ParseRequest(database).userRequest(object, in, out);
+                new ParseRequest(database).userRequest(object, out);
             } else if(request.equalsIgnoreCase("sendNotification")) {
-                new ParseRequest(database).sendNotification(object, in, out);
+                new ParseRequest(database).sendNotification(object, out);
             }
 
         } catch (IOException e) {
