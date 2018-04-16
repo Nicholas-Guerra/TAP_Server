@@ -85,10 +85,13 @@ public class ParseRequest {
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
+
+
+
             //String cryptoID = request.getString( key: "cryptoID");
             //String cryptoPrivateKey = request.getString( key: "cryptoPrivateKey")
-            //String cryptoPublicKey = request.getString("cryptoPublicKey");
-            //Double balance = request.getString("balance");
+            //String cryptoPublicKey = request.getString( key: "cryptoPublicKey");
+            //Double balance = request.getString( key: "balance");
             String userName = request.getString("userName");
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
@@ -110,19 +113,7 @@ public class ParseRequest {
                 //        " SELECT last_insert_rowid()");
                 //resultSet.next();
                 //String id = resultSet.getString("userID");
-                userName = "stevenTest";
-                hashedPassword = "cdev5348";
-                int cryptoID = 65462;
-                int cryptoPrivateKey = 318421;
-                int cryptoPublicKey = 124216;
-                email = "stev@gmail.com";
-                phoneNumber = "8322933810";
 
-
-
-
-                ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                                " VALUES (" + userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "','" + balance + "','" + email + "','" + phoneNumber + ")");
             }
                 /*JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "verified")
@@ -163,7 +154,7 @@ public class ParseRequest {
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
-
+//change amount to balance
                 database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
                         "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
@@ -232,7 +223,7 @@ public class ParseRequest {
             object = new JSONObject();
             object.put("Status", "Complete");
             object.put("array", array);
-
+            //send current balance
 
             System.out.println(object.toString());
 
