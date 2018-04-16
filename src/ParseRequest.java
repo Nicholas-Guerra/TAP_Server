@@ -90,7 +90,6 @@ public class ParseRequest {
         System.out.println("New User Request");
 
         try {
-            //String userId = UUID.randomUUID().toString();
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             int phoneNumber = request.getInt("phoneNumber");
