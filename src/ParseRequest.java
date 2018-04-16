@@ -21,7 +21,7 @@ public class ParseRequest {
     }
 
 
-    public void parseLogin(JSONObject request, BufferedReader in, PrintWriter out) throws SQLException {
+    public void parseLogin(JSONObject request, BufferedReader in, PrintWriter out){
 
         System.out.println("Login Request");
 
@@ -167,12 +167,8 @@ public class ParseRequest {
         database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
                         "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
-
-
         send.put("Status", "Completed Transaction");
         out.println(send.toString());
-
-
 
     }
 
@@ -235,7 +231,7 @@ public class ParseRequest {
 
         JSONObject send = new JSONObject();
         try {
-            String usernName = request.getString("userName");
+            String userName = request.getString("userName");
 
             String token = request.getString("token");
 
@@ -284,6 +280,21 @@ public class ParseRequest {
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void sendNotification(JSONObject request, BufferedReader in, PrintWriter out){
+
+        JSONObject send = new JSONObject();
+        try {
+            String userName = request.getString("userName");
+
+            send.put("notifications", "New notifications!");
+            out.println(send.toString());
+
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 

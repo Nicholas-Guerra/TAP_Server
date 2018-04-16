@@ -39,17 +39,17 @@ public class ServerThread implements Runnable {
                 new ParseRequest(database).parseTransaction(object, in, out);
             } else if(request.equalsIgnoreCase("History")){
                 new ParseRequest(database).parseHistory(object, in, out);
-            } else if((request.equalsIgnoreCase("updateToken")){
+            } else if(request.equalsIgnoreCase("updateToken")){
                 new ParseRequest(database).updateToken(object, in, out);
             } else if(request.equalsIgnoreCase("userRequest")){
                 new ParseRequest(database).userRequest(object, in, out);
+            } else if(request.equalsIgnoreCase("sendNotification")) {
+                new ParseRequest(database).sendNotification(object, in, out);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
 
