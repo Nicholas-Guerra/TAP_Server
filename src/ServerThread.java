@@ -41,6 +41,8 @@ public class ServerThread implements Runnable {
                 new ParseRequest(database).parseHistory(object, in, out);
             } else if((request.equalsIgnoreCase("updateToken")){
                 new ParseRequest(database).updateToken(object, in, out);
+            } else if(request.equalsIgnoreCase("userRequest")){
+                new ParseRequest(database).userRequest(object, in, out);
             }
 
         } catch (IOException e) {

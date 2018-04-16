@@ -78,13 +78,11 @@ public class ParseRequest {
 
 
 
-            ResultSet userCheck = database.runQuery(
-                    .runQuery("SELECT userName" +
+            ResultSet userCheck = database.runQuery("SELECT userName" +
                             "FROM AccountInfo" +
                             "WHERE userName = " + userName);
 
-            ResultSet emailCheck = database.runQuery(
-                    .runQuery("SELECT email" +
+            ResultSet emailCheck = database.runQuery("SELECT email" +
                             "FROM AccountInfo" +
                             "WHERE email = " + email);
 
@@ -129,7 +127,7 @@ public class ParseRequest {
 //sender, receiver, amount
 
          ResultSet maxTransactionID = database.runQuery(
-                .runQuery("SELECT transactionID" +
+                 .runQuery("SELECT transactionID" +
                         "FROM Transactions" +
                         "WHERE TransactionID = (select max(TransactionID)) ");
 
@@ -229,7 +227,31 @@ public class ParseRequest {
             e.printStackTrace();
         }
 
+    }
 
+    public void userRequest(JSONObject request, BufferedReader in, PrintWriter out){
+        //
+        JSONArray array = new JSONArray();
+
+        String search = request.getString("Search");
+        search = "%" + search + "%";
+        ResultSet  users = database.runQuery(
+                    "SELECT userName" +
+                                "FROM AccountInfo" +
+                                "WHERE user LIKE " +search);
+
+        JSONObject object;
+        while (users.next()) {
+            object = new JSONObject();
+            object.put("userName", users.getString("userName"));
+            array.put(object);
+
+        }
+
+        object = new JSONObject();
+        object.put("Array", array);
+
+        out.println(object.toString());
 
 
 
