@@ -31,36 +31,60 @@ public class ParseRequest {
             try {
            /*     int id = resultSet.getInt("userId");
                 String password = resultSet.getString("hashedPassword");*/
-                String userName = request.getString("userName");
-                String hashedPassword = request.getString("hashedPassword");
+                String userName = null;
+                try {
+                    userName = request.getString("userName");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String hashedPassword = null;
+                try {
+                    hashedPassword = request.getString("hashedPassword");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
 
-                ResultSet passwordCheck = database.runQuery(
-                        .runQuery("SELECT hashedPassword" +
+                ResultSet passwordCheck = database.runQuery("SELECT hashedPassword" +
                                 "FROM AccountInfo" +
                                 "WHERE userName = " + userName);
 
                 if(!passwordCheck.next()) {
                     //username wrong
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("status", "error")
-                            .put("message","Wrong Username");
-                    out.println(jsonObject.toString());
+                    try {
+                        jsonObject.put("status", "error")
+                                .put("message","Wrong Username");
+                        out.println(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
                     //wrong pass
                     JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("status", "error")
-                            .put("message", "Wrong Password");
-                    out.println(jsonObject.toString());
+                    try {
+                        jsonObject.put("status", "error")
+                                .put("message", "Wrong Password");
+                        out.println(jsonObject.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
-                    //success
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("status", "No errors")
+                                  .put("messasge", "Success!");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
-    }
 
     public void parseNewUser(JSONObject request, BufferedReader in, PrintWriter out) {
         System.out.println("New User Request");
@@ -126,8 +150,7 @@ public class ParseRequest {
         System.out.println("Transaction Request");
 //sender, receiver, amount
 
-         ResultSet maxTransactionID = database.runQuery(
-                 .runQuery("SELECT transactionID" +
+         ResultSet maxTransactionID = database.runQuery("SELECT transactionID" +
                         "FROM Transactions" +
                         "WHERE TransactionID = (select max(TransactionID)) ");
 
@@ -233,27 +256,36 @@ public class ParseRequest {
         //
         JSONArray array = new JSONArray();
 
-        String search = request.getString("Search");
-        search = "%" + search + "%";
-        ResultSet  users = database.runQuery(
+        String search = null;
+        try {
+            search = request.getString("Search");
+            search = "%" + search + "%";
+            ResultSet  users = database.runQuery(
                     "SELECT userName" +
                                 "FROM AccountInfo" +
-                                "WHERE user LIKE " +search);
+                                "WHERE user LIKE " + search);
+            JSONObject object;
+            while (users.next()) {
+                object = new JSONObject();
+                try {
+                    object.put("userName", users.getString("userName"));
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                array.put(object);
 
-        JSONObject object;
-        while (users.next()) {
+            }
+
             object = new JSONObject();
-            object.put("userName", users.getString("userName"));
-            array.put(object);
+            object.put("Array", array);
 
+            out.println(object.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        object = new JSONObject();
-        object.put("Array", array);
-
-        out.println(object.toString());
-
-
 
     }
 }
