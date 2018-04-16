@@ -6,7 +6,7 @@ public class Database {
     public Database() {
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:ExternalDb");
+            connection = DriverManager.getConnection("jdbc:sqlite:ExternalDb.sqlite");
 
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();

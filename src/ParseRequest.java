@@ -84,7 +84,7 @@ public class ParseRequest {
         try {
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
-            int phoneNumber = request.getInt("phoneNumber");
+            String phoneNumber = request.getString("phoneNumber");
             //String cryptoID = request.getString( key: "cryptoID");
             //String cryptoPrivateKey = request.getString( key: "cryptoPrivateKey")
             //String cryptoPublicKey = request.getString("cryptoPublicKey");
@@ -110,12 +110,25 @@ public class ParseRequest {
                 //        " SELECT last_insert_rowid()");
                 //resultSet.next();
                 //String id = resultSet.getString("userID");
+                userName = "stevenTest";
+                hashedPassword = "cdev5348";
+                int cryptoID = 65462;
+                int cryptoPrivateKey = 318421;
+                int cryptoPublicKey = 124216;
+                email = "stev@gmail.com";
+                phoneNumber = "8322933810";
 
-                JSONObject jsonObject = new JSONObject();
+
+
+
+                ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
+                                " VALUES (" + userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "','" + balance + "','" + email + "','" + phoneNumber + ")");
+            }
+                /*JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "verified")
                         .put("balance", balance);
-                out.println(jsonObject.toString());
-            } else if (userCheck.isBeforeFirst()) {
+                out.println(jsonObject.toString());*/
+             else if (userCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "error")
                         .put("message", "Username already in use");
