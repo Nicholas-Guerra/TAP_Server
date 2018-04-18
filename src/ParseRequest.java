@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.crypto.Data;
 
+import static javax.swing.UIManager.put;
+
 
 public class ParseRequest {
 
@@ -78,21 +80,40 @@ public class ParseRequest {
             }
         }
 
+    public String[] Blockchain() throws JSONException {
+        JSONObject blockObject = new JSONObject();
+        String arr[] = new String[3];
+
+        String address = blockObject.getString("address");
+        String publicKey = blockObject.getString("publicKey");
+        String privateKey = blockObject.getString("privateKey");
+        blockObject.put("address", "error")
+                .put("publicKey", "Username already in use")
+                .put("privateKey", "privateKey");
+        arr[0] = address;
+        arr[1] = publicKey;
+        arr[2] = privateKey;
+        return arr;
+    }
+
     public void parseNewUser(JSONObject request, PrintWriter out) {
         System.out.println("New User Request");
 
         try {
+            Blockchain();
+            String myValues[] = Blockchain();
+            String userName = request.getString("userName");
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
-
-
+            String address = myValues[0];
+            String publicKey = myValues[1];
+            String privateKey = myValues[2];
 
             //String cryptoID = request.getString( key: "cryptoID");
             //String cryptoPrivateKey = request.getString( key: "cryptoPrivateKey")
             //String cryptoPublicKey = request.getString( key: "cryptoPublicKey");
             //Double balance = request.getString( key: "balance");
-            String userName = request.getString("userName");
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
                             "FROM AccountInfo" +
