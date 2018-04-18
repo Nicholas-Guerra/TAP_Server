@@ -45,7 +45,10 @@ public class ServerThread implements Runnable {
                 new ParseRequest(database).userRequest(object, out);
             } else if(request.equalsIgnoreCase("sendNotification")) {
                 new ParseRequest(database).sendNotification(object, out);
+            }else if(request.equalsIgnoreCase("Blockchain")){
+                new ParseRequest(database).Blockchain();
             }
+
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -24,6 +24,8 @@ import java.sql.SQLException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.crypto.Data;
 
+import static javax.swing.UIManager.put;
+
 
 public class ParseRequest {
 
@@ -89,18 +91,46 @@ public class ParseRequest {
             }
         }
 
+    public String[] Blockchain() throws JSONException {
+        JSONObject blockObject = new JSONObject();
+        String arr[] = new String[3];
+        //CREATING http connection
+
+
+
+
+
+
+
+
+        String address = blockObject.getString("address");
+        String publicKey = blockObject.getString("publicKey");
+        String privateKey = blockObject.getString("privateKey");
+
+        arr[0] = address;
+        arr[1] = publicKey;
+        arr[2] = privateKey;
+        return arr;
+    }
+
     public void parseNewUser(JSONObject request, PrintWriter out) {
         System.out.println("New User Request");
 
         try {
+            Blockchain();
+            String myValues[] = Blockchain();
+            String userName = request.getString("userName");
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
+            String address = myValues[0];
+            String publicKey = myValues[1];
+            String privateKey = myValues[2];
+
             //String cryptoID = request.getString( key: "cryptoID");
             //String cryptoPrivateKey = request.getString( key: "cryptoPrivateKey")
-            //String cryptoPublicKey = request.getString("cryptoPublicKey");
-            //Double balance = request.getString("balance");
-            String userName = request.getString("userName");
+            //String cryptoPublicKey = request.getString( key: "cryptoPublicKey");
+            //Double balance = request.getString( key: "balance");
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
                             "FROM AccountInfo" +
@@ -121,19 +151,7 @@ public class ParseRequest {
                 //        " SELECT last_insert_rowid()");
                 //resultSet.next();
                 //String id = resultSet.getString("userID");
-                userName = "stevenTest";
-                hashedPassword = "cdev5348";
-                int cryptoID = 65462;
-                int cryptoPrivateKey = 318421;
-                int cryptoPublicKey = 124216;
-                email = "stev@gmail.com";
-                phoneNumber = "8322933810";
 
-
-
-
-                ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                                " VALUES (" + userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "','" + balance + "','" + email + "','" + phoneNumber + ")");
             }
                 /*JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "verified")
@@ -174,7 +192,7 @@ public class ParseRequest {
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
-
+//change amount to balance
                 database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
                         "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
@@ -243,7 +261,7 @@ public class ParseRequest {
             object = new JSONObject();
             object.put("Status", "Complete");
             object.put("array", array);
-
+            //send current balance
 
             System.out.println(object.toString());
 
