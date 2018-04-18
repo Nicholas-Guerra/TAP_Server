@@ -83,13 +83,19 @@ public class ParseRequest {
     public String[] Blockchain() throws JSONException {
         JSONObject blockObject = new JSONObject();
         String arr[] = new String[3];
+        //CREATING http connection
+
+
+
+
+
+
+
 
         String address = blockObject.getString("address");
         String publicKey = blockObject.getString("publicKey");
         String privateKey = blockObject.getString("privateKey");
-        blockObject.put("address", "error")
-                .put("publicKey", "Username already in use")
-                .put("privateKey", "privateKey");
+
         arr[0] = address;
         arr[1] = publicKey;
         arr[2] = privateKey;
