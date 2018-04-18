@@ -22,7 +22,7 @@ public class ServerThread implements Runnable {
     @Override
     public void run() {
 
-
+        System.out.println("THREAD ");
         try {
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new PrintWriter(client.getOutputStream(), true);

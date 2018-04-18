@@ -1,9 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="TAP_Server:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/TAP_Server_jar</output-path>
-    <root id="archive" name="TAP_Server.jar">
-      <element id="module-output" name="TAP_Server" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/java-json.jar" path-in-jar="/" />
-    </root>
-  </artifact>
-</component>
