@@ -1,3 +1,4 @@
+import com.sun.org.apache.bcel.internal.generic.JsrInstruction;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Random;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -146,6 +148,13 @@ public class ParseRequest {
                 double random = new Random().nextDouble();
                 double result = start + (random * (end - start));
                 double balance = result;
+
+
+
+                JSONObject results = sendRPC();
+
+
+
                 //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
                 //        " VALUES (" userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "',' phoneNumber' )" +
                 //        " SELECT last_insert_rowid()");
@@ -401,5 +410,13 @@ public class ParseRequest {
             e.printStackTrace();
         }
 
+    }
+
+    public JSONObject sendRPC(String id, String method, List<String> params){
+
+
+        JSONObject responseJSONOBJ;
+
+        return responseJSONOBJ;
     }
 }
