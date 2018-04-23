@@ -44,7 +44,7 @@ public class ParseRequest {
             try {
                 String username = null;
                 try {
-                    username = request.getString("username");
+                    userName = request.getString("username");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -169,25 +169,25 @@ public class ParseRequest {
         try {
 
             JSONObject send = new JSONObject();
-            String senderID = request.getString("senderID");
-            String receiverID = request.getString("receiverID");
+            String sender = request.getString("sender");
+            String receiver = request.getString("receiver");
             Double amount = request.getDouble("amount");
             Long time = System.currentTimeMillis();
             String status = "pending";
 
-            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE username = '" + senderID + "'");
+            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE username = '" + sender + "'");
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
 //change amount to balance
-                database.runUpdate("INSERT into Transactions (senderID, receiverID, amount, time, status)" +
-                        "Values( " + senderID + "," + receiverID + ", " + amount + "," + time + ", " + status + ")");
+                database.runUpdate("INSERT into Transactions (sender, receiver, amount, time, status)" +
+                        "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount - " + amount +
-                        " WHERE username = '" + senderID + "'");
+                        " WHERE username = '" + sender + "'");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount + " + amount +
-                        " WHERE username = '" + receiverID + "'");
+                        " WHERE username = '" + receiver + "'");
 
                 send.put("Status", "Complete");
                 out.println(send.toString());
@@ -223,7 +223,7 @@ public class ParseRequest {
                                         " SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         " FROM Transactions JOIN AccountInfo" +
                                         " ON Transactions.receiverID = AccountInfo.userID" +
-                                        " WHERE Transactions.receiver  != '" + username + "'"); //Transactions.receiverID?
+                                        " WHERE Transactions.receiver  != '" + username + "'");
 
 
 
