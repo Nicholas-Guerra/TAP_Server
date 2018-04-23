@@ -458,6 +458,8 @@ public class ParseRequest {
                 System.out.println("Good Response");
             }
 
+            String retJSON = EntityUtils.toString(myentity2);
+            responseJSONObj = new JSONObject(retJSON);
             //JSONParser parser = new JSONParser();
             //responseJSONObj = myresponse.(EntityUtils.toString(myentity2));
 
@@ -471,9 +473,6 @@ public class ParseRequest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            // When HttpClient instance is no longer needed,
-            // shut down the connection manager to ensure
-            // immediate deallocation of all system resources
             httpclient.getConnectionManager().shutdown();
         }
 
