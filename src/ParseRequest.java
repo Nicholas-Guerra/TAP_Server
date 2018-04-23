@@ -42,9 +42,9 @@ public class ParseRequest {
         System.out.println("Login Request");
 
             try {
-                String userName = null;
+                String username = null;
                 try {
-                    userName = request.getString("userName");
+                    userName = request.getString("username");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -57,7 +57,7 @@ public class ParseRequest {
 
                 ResultSet passwordCheck = database.runQuery("SELECT hashedPassword" +
                                 "FROM AccountInfo" +
-                                "WHERE userName = " + userName);
+                                "WHERE username = " + username);
                 if(!passwordCheck.next()) {
                     //username wrong
                     JSONObject jsonObject = new JSONObject();
@@ -99,7 +99,7 @@ public class ParseRequest {
         try {
             Blockchain();
             String myValues[] = Blockchain();
-            String userName = request.getString("userName");
+            String username = request.getString("username");
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
@@ -112,9 +112,9 @@ public class ParseRequest {
             //String cryptoPublicKey = request.getString( key: "cryptoPublicKey");
             //Double balance = request.getString( key: "balance");
 
-            ResultSet userCheck = database.runQuery("SELECT userName" +
+            ResultSet userCheck = database.runQuery("SELECT username" +
                             "FROM AccountInfo" +
-                            "WHERE userName = " + userName);
+                            "WHERE username = " + username);
 
             ResultSet emailCheck = database.runQuery("SELECT email" +
                             "FROM AccountInfo" +
@@ -133,8 +133,8 @@ public class ParseRequest {
 
 
 
-                //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                //        " VALUES (" userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "',' phoneNumber' )" +
+                //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber, token)" +
+                //        " VALUES (" userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "',' " + phoneNumber + "',' " token"  )" +
                 //        " SELECT last_insert_rowid()");
                 //resultSet.next();
                 //String id = resultSet.getString("userID");
@@ -146,7 +146,7 @@ public class ParseRequest {
                 out.println(jsonObject.toString());*/
              else if (userCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("status", "error")
+                jsonObject.put("status", "Error")
                         .put("message", "Username already in use");
                 out.println(jsonObject.toString());
             }else if (emailCheck.isBeforeFirst()) {
@@ -175,19 +175,19 @@ public class ParseRequest {
             Long time = System.currentTimeMillis();
             String status = "pending";
 
-            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + sender + "'");
+            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE username = '" + sender + "'");
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
 //change amount to balance
-                database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+                database.runUpdate("INSERT into Transactions (sender, receiver, amount, time, status)" +
                         "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount - " + amount +
-                        " WHERE userName = '" + sender + "'");
+                        " WHERE username = '" + sender + "'");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount + " + amount +
-                        " WHERE userName = '" + receiver + "'");
+                        " WHERE username = '" + receiver + "'");
 
                 send.put("Status", "Complete");
                 out.println(send.toString());
@@ -265,12 +265,12 @@ public class ParseRequest {
 
 
         try {
-            String userName = request.getString("userName");
+            String userName = request.getString("username");
             String token = request.getString("token");
 
             //update token variable = to string that Nick sent
             database.runUpdate("UPDATE AccountInfo SET token = " + token +
-                    " WHERE userName = '" + userName +"'");
+                    " WHERE username = '" + userName +"'");
 
             JSONObject send = new JSONObject();
             send.put("Status", "Complete");
@@ -291,7 +291,7 @@ public class ParseRequest {
             search = request.getString("Search");
             search = "%" + search + "%";
             ResultSet  users = database.runQuery(
-                    "SELECT userName" +
+                    "SELECT username" +
                                 "FROM AccountInfo" +
                                 "WHERE user LIKE " + search);
 
@@ -299,7 +299,7 @@ public class ParseRequest {
             JSONObject object;
             while (users.next()) {
                 object = new JSONObject();
-                object.put("userName", users.getString("userName"));
+                object.put("username", users.getString("username"));
                 array.put(object);
 
             }
@@ -329,12 +329,12 @@ public class ParseRequest {
 
             ResultSet resultSet = database.runQuery("SELECT token " +
                                                 "FROM AccountInfo " +
-                                                "WHERE userName = " + to);
+                                                "WHERE username = " + to);
 
             resultSet.next();
             String token = resultSet.getString("token");
 
-            database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+            database.runUpdate("INSERT into Transactions (sender, receiver, amount, time, status)" +
                     "Values('" + from + "','" + to + "', " + amount + "," + String.valueOf(time) + ", 'Waiting')");
 
 
@@ -352,7 +352,7 @@ public class ParseRequest {
 
                         JSONObject object = new JSONObject();
                         JSONObject data = new JSONObject();
-                        data.put("User Name", "Sally")
+                        data.put("Username", "Sally")
                                 .put("Amount", "41.28")
                                 .put("Date", "1523831301798");
 
