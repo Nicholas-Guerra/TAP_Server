@@ -1,5 +1,10 @@
 import com.sun.org.apache.bcel.internal.generic.JsrInstruction;
+<<<<<<< Updated upstream
 import jdk.nashorn.internal.parser.JSONParser;
+=======
+
+
+>>>>>>> Stashed changes
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -193,8 +198,13 @@ public class ParseRequest {
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
+<<<<<<< Updated upstream
 //change amount to balance
                 database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+=======
+            //change amount to balance
+                database.runUpdate("INSERT into Transactions (sender, receiver, amount, time, status)" +
+>>>>>>> Stashed changes
                         "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount - " + amount +
@@ -420,7 +430,7 @@ public class ParseRequest {
 
         String mainURLL = "jaredrattray.com";
         int portNum = 1111;
-        String userName = "temp";
+        String userName = "multichainrpc";
         String password = "temp";
         String post = "http://chainname:password@IPAddress:port";
         String chainName = "temp";
