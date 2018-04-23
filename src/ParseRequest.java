@@ -462,4 +462,63 @@ public class ParseRequest {
 
         return responseJSONObj;
     }
+    public JSONObject sendRPC(String method) throws JSONException {
+
+        String mainURLL = "jaredrattray.com";
+        int portNum = 1111;
+        String userName = "temp";
+        String password = "temp";
+        String post = "http://chainname:password@IPAddress:port";
+        String chainName = "temp";
+        DefaultHttpClient httpclient = new DefaultHttpClient();
+
+
+        JSONObject json = new JSONObject();
+        json.put("chain_name",chainName);
+        json.put("method",method);
+
+            JSONArray array = new JSONArray();
+            array.optString(params.indexOf(i)); //add parameters for giving new user permissions
+            json.put("params",array);
+
+
+
+
+        JSONObject responseJSONObj = null;
+
+        try{
+            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
+                    new UsernamePasswordCredentials(userName,password));
+            StringEntity myString = new StringEntity(json.toString());
+            System.out.println(json.toString());
+            HttpPost myhttppost = new HttpPost(post);
+            myhttppost.setEntity(myString);
+
+            HttpResponse myresponse = httpclient.execute(myhttppost);
+            HttpEntity myentity2 = myresponse.getEntity();
+            System.out.println(myresponse.getStatusLine());
+            if(myentity2 != null){
+                System.out.println("Good Response");
+            }
+
+            String retJSON = EntityUtils.toString(myentity2);
+            responseJSONObj = new JSONObject(retJSON);
+
+
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            httpclient.getConnectionManager().shutdown();
+        }
+
+
+        return responseJSONObj;
+    }
 }
