@@ -1,4 +1,5 @@
 import com.sun.org.apache.bcel.internal.generic.JsrInstruction;
+import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -116,15 +117,11 @@ public class ParseRequest {
         System.out.println("New User Request");
 
         try {
-            Blockchain();
-            String myValues[] = Blockchain();
             String userName = request.getString("userName");
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
-            String address = myValues[0];
-            String publicKey = myValues[1];
-            String privateKey = myValues[2];
+
 
 
 
@@ -146,6 +143,7 @@ public class ParseRequest {
 
 
                 JSONObject results = sendRPC("createkeypairs"); //fill parameter list, just add in method name
+               // JSONObject results = sendRPC();
 
 
 
@@ -214,6 +212,9 @@ public class ParseRequest {
                 rpcRequestList.add(receiverCryptID);
                 JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
                 //call rpc here. i will need to query the database with the username to get the ID
+
+
+
                 send.put("Status", "Complete");
                 out.println(send.toString());
             } else{
@@ -415,14 +416,14 @@ public class ParseRequest {
 
     }
 
-    public JSONObject sendRPC(String id, String method, List<String> params){
+    public JSONObject sendRPC(String id, String method, List<String> params) throws JSONException {
 
         String mainURLL = "jaredrattray.com";
         int portNum = 1111;
         String userName = "temp";
         String password = "temp";
         String post = "http://chainname:password@IPAddress:port";
-        String chainName;
+        String chainName = "temp";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
@@ -457,7 +458,25 @@ public class ParseRequest {
                 System.out.println("Good Response");
             }
 
+            //JSONParser parser = new JSONParser();
+            //responseJSONObj = myresponse.(EntityUtils.toString(myentity2));
+
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            // When HttpClient instance is no longer needed,
+            // shut down the connection manager to ensure
+            // immediate deallocation of all system resources
+            httpclient.getConnectionManager().shutdown();
         }
+
 
         return responseJSONObj;
     }
