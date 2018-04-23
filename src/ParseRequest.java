@@ -25,6 +25,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.crypto.Data;
+/*
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.simple.parser.JSONParser;
+*/
+
+
+
+
+
 
 import static javax.swing.UIManager.put;
 
@@ -107,10 +125,7 @@ public class ParseRequest {
             String publicKey = myValues[1];
             String privateKey = myValues[2];
 
-            //String cryptoID = request.getString( key: "cryptoID");
-            //String cryptoPrivateKey = request.getString( key: "cryptoPrivateKey")
-            //String cryptoPublicKey = request.getString( key: "cryptoPublicKey");
-            //Double balance = request.getString( key: "balance");
+
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
                             "FROM AccountInfo" +
@@ -129,7 +144,7 @@ public class ParseRequest {
 
 
 
-                JSONObject results = sendRPC();
+                JSONObject results = sendRPC(createkeypairs); //fill parameter list, just add in method name
 
 
 
@@ -189,6 +204,12 @@ public class ParseRequest {
                 database.runUpdate("UPDATE AccountInfo SET amount = amount + " + amount +
                         " WHERE userName = '" + receiver + "'");
 
+                ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + sender + "'");
+                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
+                String senderCryptID = resultSet.getString("cryptoID");
+                String receiverCryptID = resultSet.getString("cryptoID");
+                JSONObject transactionBlock = sendRPC();
+                //call rpc here. i will need to query the database with the username to get the ID
                 send.put("Status", "Complete");
                 out.println(send.toString());
             } else{
