@@ -93,28 +93,6 @@ public class ParseRequest {
             }
         }
 
-    public String[] Blockchain() throws JSONException {
-        JSONObject blockObject = new JSONObject();
-        String arr[] = new String[3];
-        //CREATING http connection
-
-
-
-
-
-
-
-
-        String address = blockObject.getString("address");
-        String publicKey = blockObject.getString("publicKey");
-        String privateKey = blockObject.getString("privateKey");
-
-        arr[0] = address;
-        arr[1] = publicKey;
-        arr[2] = privateKey;
-        return arr;
-    }
-
     public void parseNewUser(JSONObject request, PrintWriter out) {
         System.out.println("New User Request");
 
@@ -414,9 +392,48 @@ public class ParseRequest {
 
     public JSONObject sendRPC(String id, String method, List<String> params){
 
+        String mainURLL = "jaredrattray.com";
+        int portNum = 1111;
+        String userName = "temp";
+        String password = "temp";
+        String post = "http://chainname:password@IPAddress:port";
+        String chainName;
+        DefaultHttpClient httpclient = new DefaultHttpClient();
 
-        JSONObject responseJSONOBJ;
 
-        return responseJSONOBJ;
+        JSONObject json = new JSONObject();
+        json.put("id",id);
+        json.put("chain_name",chainName);
+        json.put("method",method);
+        if(null != params){
+            JSONArray array = new JSONArray();
+            for(int i = 1; i <= params.size(); i++) {
+                array.optString(params.indexOf(i));
+            }
+            json.put("params",array);
+
+        }
+
+
+        JSONObject responseJSONObj = null;
+
+        try{
+            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
+                    new UsernamePasswordCredentials(userName,password));
+            StringEntity myString = new StringEntity(json.toString());
+            System.out.println(json.toString());
+            HttpPost myhttppost = new HttpPost(post);
+            myhttppost.setEntity(myString);
+
+            HttpResponse myresponse = httpclient.execute(myhttppost);
+            HttpEntity myentity2 = myresponse.getEntity();
+            System.out.println(myresponse.getStatusLine());
+            if(myentity2 != null){
+                System.out.println("Good Response");
+            }
+
+        }
+
+        return responseJSONObj;
     }
 }
