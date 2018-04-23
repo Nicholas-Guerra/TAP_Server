@@ -1,4 +1,6 @@
 import com.sun.org.apache.bcel.internal.generic.JsrInstruction;
+import jdk.nashorn.internal.parser.JSONParser;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +19,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.io.BufferedReader;
@@ -26,7 +29,7 @@ import java.sql.SQLException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.crypto.Data;
 
-import static javax.swing.UIManager.put;
+
 
 
 public class ParseRequest {
@@ -42,9 +45,9 @@ public class ParseRequest {
         System.out.println("Login Request");
 
             try {
-                String username = null;
+                String userName = null;
                 try {
-                    username = request.getString("username");
+                    userName = request.getString("userName");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -57,7 +60,7 @@ public class ParseRequest {
 
                 ResultSet passwordCheck = database.runQuery("SELECT hashedPassword" +
                                 "FROM AccountInfo" +
-                                "WHERE username = " + username);
+                                "WHERE userName = " + userName);
                 if(!passwordCheck.next()) {
                     //username wrong
                     JSONObject jsonObject = new JSONObject();
@@ -97,24 +100,17 @@ public class ParseRequest {
         System.out.println("New User Request");
 
         try {
-            Blockchain();
-            String myValues[] = Blockchain();
-            String username = request.getString("username");
+            String userName = request.getString("userName");
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
-            String address = myValues[0];
-            String publicKey = myValues[1];
-            String privateKey = myValues[2];
 
-            //String cryptoID = request.getString( key: "cryptoID");
-            //String cryptoPrivateKey = request.getString( key: "cryptoPrivateKey")
-            //String cryptoPublicKey = request.getString( key: "cryptoPublicKey");
-            //Double balance = request.getString( key: "balance");
 
-            ResultSet userCheck = database.runQuery("SELECT username" +
+
+
+            ResultSet userCheck = database.runQuery("SELECT userName" +
                             "FROM AccountInfo" +
-                            "WHERE username = " + username);
+                            "WHERE userName = " + userName);
 
             ResultSet emailCheck = database.runQuery("SELECT email" +
                             "FROM AccountInfo" +
@@ -129,12 +125,13 @@ public class ParseRequest {
 
 
 
-                JSONObject results = sendRPC();
+                JSONObject results = sendRPC("createkeypairs"); //fill parameter list, just add in method name
+               // JSONObject results = sendRPC();
 
 
 
-                //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber, token)" +
-                //        " VALUES (" userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "',' " + phoneNumber + "',' " token"  )" +
+                //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
+                //        " VALUES (" userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "',' phoneNumber' )" +
                 //        " SELECT last_insert_rowid()");
                 //resultSet.next();
                 //String id = resultSet.getString("userID");
@@ -146,7 +143,7 @@ public class ParseRequest {
                 out.println(jsonObject.toString());*/
              else if (userCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("status", "Error")
+                jsonObject.put("status", "error")
                         .put("message", "Username already in use");
                 out.println(jsonObject.toString());
             }else if (emailCheck.isBeforeFirst()) {
@@ -169,25 +166,38 @@ public class ParseRequest {
         try {
 
             JSONObject send = new JSONObject();
-            String senderID = request.getString("senderID");
-            String receiverID = request.getString("receiverID");
+            String sender = request.getString("sender");
+            String receiver = request.getString("receiver");
             Double amount = request.getDouble("amount");
             Long time = System.currentTimeMillis();
             String status = "pending";
 
-            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE username = '" + senderID + "'");
+            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + sender + "'");
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
 //change amount to balance
-                database.runUpdate("INSERT into Transactions (sender, receiverID, amount, time, status)" +
-                        "Values( " + senderID + "," + receiverID + ", " + amount + "," + time + ", " + status + ")");
+                database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+
+                        "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount - " + amount +
-                        " WHERE username = '" + senderID + "'");
+                        " WHERE userName = '" + sender + "'");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount + " + amount +
-                        " WHERE username = '" + receiverID + "'");
+                        " WHERE userName = '" + receiver + "'");
+
+                ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + sender + "'");
+                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
+                String senderCryptID = resultSet.getString("cryptoID");
+                String receiverCryptID = resultSet.getString("cryptoID");
+                List rpcRequestList = new ArrayList();
+                rpcRequestList.add(senderCryptID);
+                rpcRequestList.add(receiverCryptID);
+                JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
+                //call rpc here. i will need to query the database with the username to get the ID
+
+
 
                 send.put("Status", "Complete");
                 out.println(send.toString());
@@ -218,12 +228,12 @@ public class ParseRequest {
                     .runQuery("SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         " FROM Transactions JOIN AccountInfo" +
                                         " ON Transactions.senderID = AccountInfo.userID" +
-                                        " WHERE Transactions.senderID != '" + username  + "'" +
+                                        " WHERE Transactions.sender != '" + username  + "'" +
                                         " UNION" +
                                         " SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         " FROM Transactions JOIN AccountInfo" +
                                         " ON Transactions.receiverID = AccountInfo.userID" +
-                                        " WHERE Transactions.receiverID  != '" + username + "'");
+                                        " WHERE Transactions.receiver  != '" + username + "'");
 
 
 
@@ -232,7 +242,7 @@ public class ParseRequest {
                 object = new JSONObject();
 
                 amount = resultSet.getDouble("amount");
-                if (username.equals(resultSet.getString("senderID")))
+                if (username.equals(resultSet.getString("sender")))
                     amount *= -1;
 
                 object.put("transactionID", resultSet.getString("transactionID"))
@@ -265,12 +275,12 @@ public class ParseRequest {
 
 
         try {
-            String username = request.getString("username");
+            String userName = request.getString("userName");
             String token = request.getString("token");
 
             //update token variable = to string that Nick sent
             database.runUpdate("UPDATE AccountInfo SET token = " + token +
-                    " WHERE username = '" + username +"'");
+                    " WHERE userName = '" + userName +"'");
 
             JSONObject send = new JSONObject();
             send.put("Status", "Complete");
@@ -291,7 +301,7 @@ public class ParseRequest {
             search = request.getString("Search");
             search = "%" + search + "%";
             ResultSet  users = database.runQuery(
-                    "SELECT username" +
+                    "SELECT userName" +
                                 "FROM AccountInfo" +
                                 "WHERE user LIKE " + search);
 
@@ -299,7 +309,7 @@ public class ParseRequest {
             JSONObject object;
             while (users.next()) {
                 object = new JSONObject();
-                object.put("username", users.getString("username"));
+                object.put("userName", users.getString("userName"));
                 array.put(object);
 
             }
@@ -329,12 +339,12 @@ public class ParseRequest {
 
             ResultSet resultSet = database.runQuery("SELECT token " +
                                                 "FROM AccountInfo " +
-                                                "WHERE username = " + to);
+                                                "WHERE userName = " + to);
 
             resultSet.next();
             String token = resultSet.getString("token");
 
-            database.runUpdate("INSERT into Transactions (senderID, receiverID, amount, time, status)" +
+            database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
                     "Values('" + from + "','" + to + "', " + amount + "," + String.valueOf(time) + ", 'Waiting')");
 
 
@@ -352,7 +362,7 @@ public class ParseRequest {
 
                         JSONObject object = new JSONObject();
                         JSONObject data = new JSONObject();
-                        data.put("Username", "Sally")
+                        data.put("User Name", "Sally")
                                 .put("Amount", "41.28")
                                 .put("Date", "1523831301798");
 
@@ -390,14 +400,14 @@ public class ParseRequest {
 
     }
 
-    public JSONObject sendRPC(String id, String method, List<String> params){
+    public JSONObject sendRPC(String id, String method, List<String> params) throws JSONException {
 
         String mainURLL = "jaredrattray.com";
         int portNum = 1111;
-        String username = "temp";
+        String userName = "multichainrpc";
         String password = "temp";
         String post = "http://chainname:password@IPAddress:port";
-        String chainName;
+        String chainName = "temp";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
@@ -419,7 +429,7 @@ public class ParseRequest {
 
         try{
             httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
-                    new UsernamePasswordCredentials(username,password));
+                    new UsernamePasswordCredentials(userName,password));
             StringEntity myString = new StringEntity(json.toString());
             System.out.println(json.toString());
             HttpPost myhttppost = new HttpPost(post);
@@ -432,7 +442,23 @@ public class ParseRequest {
                 System.out.println("Good Response");
             }
 
+            String retJSON = EntityUtils.toString(myentity2);
+            responseJSONObj = new JSONObject(retJSON);
+
+
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            httpclient.getConnectionManager().shutdown();
         }
+
 
         return responseJSONObj;
     }
