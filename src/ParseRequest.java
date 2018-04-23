@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.io.BufferedReader;
@@ -144,7 +145,7 @@ public class ParseRequest {
 
 
 
-                JSONObject results = sendRPC(createkeypairs); //fill parameter list, just add in method name
+                JSONObject results = sendRPC("createkeypairs"); //fill parameter list, just add in method name
 
 
 
@@ -208,7 +209,10 @@ public class ParseRequest {
                 ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
                 String senderCryptID = resultSet.getString("cryptoID");
                 String receiverCryptID = resultSet.getString("cryptoID");
-                JSONObject transactionBlock = sendRPC();
+                List rpcRequestList = new ArrayList();
+                rpcRequestList.add(senderCryptID);
+                rpcRequestList.add(receiverCryptID);
+                JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
                 //call rpc here. i will need to query the database with the username to get the ID
                 send.put("Status", "Complete");
                 out.println(send.toString());
