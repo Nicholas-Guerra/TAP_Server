@@ -32,26 +32,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.net.ssl.HttpsURLConnection;
 import javax.xml.crypto.Data;
-/*
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
-import org.json.simple.parser.JSONParser;
-*/
 
 
-
-
-
-
-import static javax.swing.UIManager.put;
 
 
 public class ParseRequest {
@@ -468,8 +450,9 @@ public class ParseRequest {
                 System.out.println("Good Response");
             }
 
-            //JSONParser parser = new JSONParser();
-            //responseJSONObj = myresponse.(EntityUtils.toString(myentity2));
+            String retJSON = EntityUtils.toString(myentity2);
+            responseJSONObj = new JSONObject(retJSON);
+
 
         } catch (ClientProtocolException e) {
             // TODO Auto-generated catch block
@@ -481,9 +464,6 @@ public class ParseRequest {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
-            // When HttpClient instance is no longer needed,
-            // shut down the connection manager to ensure
-            // immediate deallocation of all system resources
             httpclient.getConnectionManager().shutdown();
         }
 
