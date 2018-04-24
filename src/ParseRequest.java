@@ -100,16 +100,10 @@ public class ParseRequest {
         System.out.println("New User Request");
 
         try {
-            /*String userName = request.getString("userName");
+            String userName = request.getString("userName");
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
-            String phoneNumber = request.getString("phoneNumber");*/
-
-            ////Hardcoded for TESTING
-            String userName = "Sam Houston";
-            String hashedPassword = "OMW2FYB";
-            String email = "sammyOG@SHSU.edu";
-            String phoneNumber = "8322589461";
+            String phoneNumber = request.getString("phoneNumber");
 
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
