@@ -108,12 +108,12 @@ public class ParseRequest {
 
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
-                            "FROM AccountInfo" +
-                            "WHERE userName = " + userName);
+                            " FROM AccountInfo" +
+                            " WHERE userName = " + userName);
 
             ResultSet emailCheck = database.runQuery("SELECT email" +
-                            "FROM AccountInfo" +
-                            "WHERE email = " + email);
+                            " FROM AccountInfo" +
+                            " WHERE email = " + email);
 
             if (!emailCheck.isBeforeFirst() && !userCheck.isBeforeFirst()){
                 double start = 5;
@@ -128,7 +128,7 @@ public class ParseRequest {
                 String token = String.valueOf(value);
 
                 ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                " VALUES (" + userName + "','" + hashedPassword + "','" + results.get("address") + "','" + results.get("privkey") + "','" + results.get("pubkey") + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " )" +
+                " VALUES ('" + userName + "','" + hashedPassword + "','" + results.get("address") + "','" + results.get("privkey") + "','" + results.get("pubkey") + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " ')" +
                 " SELECT last_insert_rowid()");
                 resultSet.next();
 
