@@ -66,7 +66,7 @@ public class ParseRequest {
                     JSONObject jsonObject = new JSONObject();
                     try {
                         jsonObject.put("Status", "Incomplete")
-                                .put("Message","Wrong Username");
+                                .put("Message","Wrong UserName");
                         out.println(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -106,6 +106,7 @@ public class ParseRequest {
             String phoneNumber = request.getString("phoneNumber");
 
 
+
             ResultSet userCheck = database.runQuery("SELECT userName" +
                             "FROM AccountInfo" +
                             "WHERE userName = " + userName);
@@ -139,7 +140,7 @@ public class ParseRequest {
              else if (userCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "error")
-                        .put("message", "Username already in use");
+                        .put("message", "UserName already in use");
                 out.println(jsonObject.toString());
             }else if (emailCheck.isBeforeFirst()) {
                     JSONObject jsonObject = new JSONObject();
@@ -191,7 +192,7 @@ public class ParseRequest {
                 rpcRequestList.add(receiverCryptID);
                 rpcRequestList.add(Double.toString(amount));
                 JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
-                //call rpc here. i will need to query the database with the username to get the ID
+                //call rpc here. i will need to query the database with the userName to get the ID
 
 
 
@@ -215,7 +216,7 @@ public class ParseRequest {
 
     public void parseHistory(JSONObject request, PrintWriter out) {
         try {
-            String username = request.getString("username");
+            String userName = request.getString("userName");
 
             JSONArray array = new JSONArray();
             JSONObject object;
@@ -224,12 +225,12 @@ public class ParseRequest {
                     .runQuery("SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         " FROM Transactions JOIN AccountInfo" +
                                         " ON Transactions.senderID = AccountInfo.userID" +
-                                        " WHERE Transactions.sender != '" + username  + "'" +
+                                        " WHERE Transactions.sender != '" + userName  + "'" +
                                         " UNION" +
                                         " SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         " FROM Transactions JOIN AccountInfo" +
                                         " ON Transactions.receiverID = AccountInfo.userID" +
-                                        " WHERE Transactions.receiver  != '" + username + "'");
+                                        " WHERE Transactions.receiver  != '" + userName + "'");
 
 
 
@@ -238,11 +239,11 @@ public class ParseRequest {
                 object = new JSONObject();
 
                 amount = resultSet.getDouble("amount");
-                if (username.equals(resultSet.getString("sender")))
+                if (userName.equals(resultSet.getString("sender")))
                     amount *= -1;
 
                 object.put("transactionID", resultSet.getString("transactionID"))
-                        .put("to_from", resultSet.getString("username"))
+                        .put("to_from", resultSet.getString("userName"))
                         .put("status", resultSet.getString("status"))
                         .put("amount", amount)
                         .put("time", resultSet.getLong("time"));
