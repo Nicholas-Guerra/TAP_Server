@@ -105,9 +105,6 @@ public class ParseRequest {
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
 
-
-
-
             ResultSet userCheck = database.runQuery("SELECT userName" +
                             "FROM AccountInfo" +
                             "WHERE userName = " + userName);
@@ -123,26 +120,21 @@ public class ParseRequest {
                 double result = start + (random * (end - start));
                 double balance = result;
 
-
-
                 JSONObject results = sendRPC("createkeypairs"); //fill parameter list, just add in method name
-               // JSONObject results = sendRPC();
                 Random rand = new Random();
-                int value = rand.nextInt(10000);
+                int value = rand.nextInt(1000000);
                 String token = String.valueOf(value);
-
 
                 ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
                 " VALUES (" + userName + "','" + hashedPassword + "','" + results.get("address") + "','" + results.get("privkey") + "','" + results.get("pubkey") + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " )" +
-                        " SELECT last_insert_rowid()");
-                //resultSet.next();
-                //String id = resultSet.getString("userID");
+                " SELECT last_insert_rowid()");
+                resultSet.next();
 
-            }
-                /*JSONObject jsonObject = new JSONObject();
+                JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "verified")
                         .put("balance", balance);
-                out.println(jsonObject.toString());*/
+                out.println(jsonObject.toString()); }
+
              else if (userCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "error")
@@ -160,7 +152,6 @@ public class ParseRequest {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     public void parseTransaction(JSONObject request, PrintWriter out) {
