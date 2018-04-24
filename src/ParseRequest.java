@@ -402,12 +402,12 @@ public class ParseRequest {
 
     public JSONObject sendRPC(String id, String method, List<String> params) throws JSONException {
 
-        String mainURLL = "jaredrattray.com";
-        int portNum = 1111;
+        String mainURLL = "127.0.0.1";
+        int portNum = 2770;
         String userName = "multichainrpc";
-        String password = "temp";
-        String post = "http://chainname:password@IPAddress:port";
-        String chainName = "temp";
+        String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
+        String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
+        String chainName = "tapchain";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
@@ -462,14 +462,15 @@ public class ParseRequest {
 
         return responseJSONObj;
     }
+
     public JSONObject sendRPC(String method) throws JSONException {
 
-        String mainURLL = "jaredrattray.com";
-        int portNum = 1111;
-        String userName = "temp";
-        String password = "temp";
-        String post = "http://chainname:password@IPAddress:port";
-        String chainName = "temp";
+        String mainURLL = "127.0.0.1";
+        int portNum = 2770;
+        String userName = "multichainrpc";
+        String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
+        String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
+        String chainName = "tapchain";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
