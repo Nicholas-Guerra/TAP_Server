@@ -462,6 +462,7 @@ public class ParseRequest {
 
         return responseJSONObj;
     }
+
     public JSONObject sendRPC(String method) throws JSONException {
 
         String mainURLL = "jaredrattray.com";
@@ -476,12 +477,6 @@ public class ParseRequest {
         JSONObject json = new JSONObject();
         json.put("chain_name",chainName);
         json.put("method",method);
-
-            JSONArray array = new JSONArray();
-            array.optString(params.indexOf(i)); //add parameters for giving new user permissions
-            json.put("params",array);
-
-
 
 
         JSONObject responseJSONObj = null;
@@ -503,6 +498,62 @@ public class ParseRequest {
 
             String retJSON = EntityUtils.toString(myentity2);
             responseJSONObj = new JSONObject(retJSON);
+
+
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            httpclient.getConnectionManager().shutdown();
+        }
+
+
+
+
+
+        String ID = responseJSONObj.getString("id");
+
+
+        JSONObject json2 = new JSONObject();
+        json.put("id",ID);
+        json.put("chain_name",chainName);
+        json.put("method",method);
+
+
+        String con = "connect";
+        JSONArray array = new JSONArray();
+        array.optString(1,"connect");
+        array.optString(2,"send");
+        array.optString(3,"receive");
+        json.put("params",array);
+
+
+
+        JSONObject response2JSONObj = null;
+
+        try{
+            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
+                    new UsernamePasswordCredentials(userName,password));
+            StringEntity myString = new StringEntity(json2.toString());
+            System.out.println(json2.toString());
+            HttpPost myhttppost = new HttpPost(post);
+            myhttppost.setEntity(myString);
+
+            HttpResponse myresponse = httpclient.execute(myhttppost);
+            HttpEntity myentity2 = myresponse.getEntity();
+            System.out.println(myresponse.getStatusLine());
+            if(myentity2 != null){
+                System.out.println("Good Response");
+            }
+
+            String retJSON = EntityUtils.toString(myentity2);
+            response2JSONObj = new JSONObject(retJSON);
 
 
         } catch (ClientProtocolException e) {
