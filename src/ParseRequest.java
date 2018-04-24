@@ -161,29 +161,29 @@ public class ParseRequest {
         try {
 
             JSONObject send = new JSONObject();
-            String sender = request.getString("sender");
-            String receiver = request.getString("receiver");
+            String senderID = request.getString("senderID");
+            String receiverID = request.getString("receiverID");
             Double amount = request.getDouble("amount");
             Long time = System.currentTimeMillis();
             String status = "pending";
 
-            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + sender + "'");
+            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + senderID + "'");
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
 //change amount to balance
-                database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
+                database.runUpdate("INSERT into Transactions (senderID, receiever, amount, time, status)" +
 
-                        "Values( " + sender + "," + receiver + ", " + amount + "," + time + ", " + status + ")");
+                        "Values( '" + senderID + "','" + receiverID + "', '" + amount + "','" + time + "', '" + status + "')");
 
-                database.runUpdate("UPDATE AccountInfo SET amount = amount - " + amount +
-                        " WHERE userName = '" + sender + "'");
+                database.runUpdate("UPDATE AccountInfo SET amount = amount - '" + amount + "'" +
+                        " WHERE userName = '" + senderID + "'");
 
-                database.runUpdate("UPDATE AccountInfo SET amount = amount + " + amount +
-                        " WHERE userName = '" + receiver + "'");
+                database.runUpdate("UPDATE AccountInfo SET amount = amount + '" + amount + "'" +
+                        " WHERE userName = '" + receiverID + "'");
 
-                ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + sender + "'");
-                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
+                ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + senderID + "'");
+                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiverID + "'");
                 String senderCryptID = BlocksenderCryptID.getString("cryptoID");
                 String receiverCryptID = BlockreceiverCryptID.getString("cryptoID");
                 List<String> rpcRequestList = new ArrayList();
@@ -230,7 +230,7 @@ public class ParseRequest {
                                         " SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
                                         " FROM Transactions JOIN AccountInfo" +
                                         " ON Transactions.receiverID = AccountInfo.userID" +
-                                        " WHERE Transactions.receiver  != '" + userName + "'");
+                                        " WHERE Transactions.receiverID  != '" + userName + "'");
 
 
 
@@ -341,8 +341,8 @@ public class ParseRequest {
             resultSet.next();
             String token = resultSet.getString("token");
 
-            database.runUpdate("INSERT into Transactions (sender, receiever, amount, time, status)" +
-                    "Values('" + from + "','" + to + "', " + amount + "," + String.valueOf(time) + ", 'Waiting')");
+            database.runUpdate("INSERT into Transactions (senderID, receiverID, amount, time, status)" +
+                    "Values('" + from + "','" + to + "', '" + amount + "','" + String.valueOf(time) + "', 'Waiting')");
 
 
             new Thread(new Runnable() {
