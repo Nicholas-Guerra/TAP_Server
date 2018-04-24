@@ -192,8 +192,10 @@ public class ParseRequest {
                 String senderCryptID = BlocksenderCryptID.getString("cryptoID");
                 String receiverCryptID = BlockreceiverCryptID.getString("cryptoID");
                 List<String> rpcRequestList = new ArrayList();
+
                 rpcRequestList.add(senderCryptID);
                 rpcRequestList.add(receiverCryptID);
+                rpcRequestList.add(Double.toString(amount));
                 JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
                 //call rpc here. i will need to query the database with the username to get the ID
 
