@@ -109,11 +109,11 @@ public class ParseRequest {
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
                             " FROM AccountInfo" +
-                            " WHERE userName = " + userName);
+                            " WHERE userName = '" + userName + "'");
 
             ResultSet emailCheck = database.runQuery("SELECT email" +
                             " FROM AccountInfo" +
-                            " WHERE email = " + email);
+                            " WHERE email = '" + email + "'");
 
             if (!emailCheck.isBeforeFirst() && !userCheck.isBeforeFirst()){
                 double start = 5;
