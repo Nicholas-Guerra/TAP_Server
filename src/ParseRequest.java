@@ -189,9 +189,9 @@ public class ParseRequest {
 
                 ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + sender + "'");
                 ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
-                String senderCryptID = resultSet.getString("cryptoID");
-                String receiverCryptID = resultSet.getString("cryptoID");
-                List rpcRequestList = new ArrayList();
+                String senderCryptID = BlocksenderCryptID.getString("cryptoID");
+                String receiverCryptID = BlockreceiverCryptID.getString("cryptoID");
+                List<String> rpcRequestList = new ArrayList();
                 rpcRequestList.add(senderCryptID);
                 rpcRequestList.add(receiverCryptID);
                 JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
@@ -462,7 +462,6 @@ public class ParseRequest {
 
         return responseJSONObj;
     }
-
     public JSONObject sendRPC(String method) throws JSONException {
 
         String mainURLL = "jaredrattray.com";
@@ -475,8 +474,8 @@ public class ParseRequest {
 
 
         JSONObject json = new JSONObject();
-        json.put("chain_name",chainName);
-        json.put("method",method);
+        json.put("chain_name", chainName);
+        json.put("method", method);
 
 
         JSONObject responseJSONObj = null;
