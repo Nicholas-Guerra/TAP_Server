@@ -127,12 +127,14 @@ public class ParseRequest {
 
                 JSONObject results = sendRPC("createkeypairs"); //fill parameter list, just add in method name
                // JSONObject results = sendRPC();
+                Random rand = new Random();
+                int value = rand.nextInt(10000);
+                String token = String.valueOf(value);
 
 
-
-                //ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                //        " VALUES (" userName + "','" + hashedPassword + "','" + cryptoID + "','" + cryptoPrivateKey + "','" + cryptoPublicKey + "',' balance ','" + email + "',' phoneNumber' )" +
-                //        " SELECT last_insert_rowid()");
+                ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
+                " VALUES (" + userName + "','" + hashedPassword + "','" + results.get("address") + "','" + results.get("privkey") + "','" + results.get("pubkey") + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " )" +
+                        " SELECT last_insert_rowid()");
                 //resultSet.next();
                 //String id = resultSet.getString("userID");
 
