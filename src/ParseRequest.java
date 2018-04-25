@@ -1,20 +1,14 @@
 import com.sun.org.apache.bcel.internal.generic.JsrInstruction;
 import jdk.nashorn.internal.parser.JSONParser;
 
+import multichain.command.MultiChainCommand;
+import multichain.command.MultichainException;
+import multichain.command.builders.QueryBuilderGrant;
+import multichain.object.BalanceAssetBase;
+import multichain.object.KeyPairs;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,10 +25,13 @@ import javax.xml.crypto.Data;
 
 
 
-
 public class ParseRequest {
 
     Database database;
+
+    MultiChainCommand chain = new MultiChainCommand("localhost","2770","multichainrpc" ,"DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx");
+
+
 
     public ParseRequest(Database database) {
         this.database = database;
@@ -121,14 +118,26 @@ public class ParseRequest {
                 double random = new Random().nextDouble();
                 double result = start + (random * (end - start));
                 double balance = result;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                KeyPairs key = null;
+                try {
+                    List<KeyPairs> list = chain.getAddressCommand().createKeyPairs();
+                    key = list.get(0);
 
-                JSONObject results = sendRPC("createkeypairs"); //fill parameter list, just add in method name
+                    chain.getGrantCommand().grant(key.getAddress(),1);
+                    chain.getGrantCommand().grant(key.getAddress(),2);
+                    chain.getGrantCommand().grant(key.getAddress(),3);
+                } catch (MultichainException e) {
+                    e.printStackTrace();
+                }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 Random rand = new Random();
                 int value = rand.nextInt(1000000);
                 String token = String.valueOf(value);
 
                 ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                " VALUES ('" + userName + "','" + hashedPassword + "','" + results.get("address") + "','" + results.get("privkey") + "','" + results.get("pubkey") + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " ')" +
+                " VALUES ('" + userName + "','" + hashedPassword + "','" + key.getAddress() + "','" + key.getPrivkey() + "','" + key.getPubkey() + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " ')" +
                 " SELECT last_insert_rowid()");
                 resultSet.next();
 
@@ -186,13 +195,18 @@ public class ParseRequest {
                 ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiverID + "'");
                 String senderCryptID = BlocksenderCryptID.getString("cryptoID");
                 String receiverCryptID = BlockreceiverCryptID.getString("cryptoID");
-                List<String> rpcRequestList = new ArrayList();
 
-                rpcRequestList.add(senderCryptID);
-                rpcRequestList.add(receiverCryptID);
-                rpcRequestList.add(Double.toString(amount));
-                JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
-                //call rpc here. i will need to query the database with the userName to get the ID
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                List<BalanceAssetBase> assets = new ArrayList<BalanceAssetBase>(1);
+                BalanceAssetBase temp = new BalanceAssetBase();
+                temp.setQty(amount);
+                assets.add(temp);
+                try {
+                    chain.getWalletTransactionCommand().sendFromAddress(senderCryptID, receiverCryptID,assets);
+                } catch (MultichainException e) {
+                    e.printStackTrace();
+                }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -397,176 +411,5 @@ public class ParseRequest {
 
     }
 
-    public JSONObject sendRPC(String id, String method, List<String> params) throws JSONException {
 
-        String mainURLL = "127.0.0.1";
-        int portNum = 2770;
-        String userName = "multichainrpc";
-        String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
-        String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
-        String chainName = "tapchain";
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-
-        JSONObject json = new JSONObject();
-        json.put("id",id);
-        json.put("chain_name",chainName);
-        json.put("method",method);
-        if(null != params){
-            JSONArray array = new JSONArray();
-            for(int i = 1; i <= params.size(); i++) {
-                array.optString(params.indexOf(i));
-            }
-            json.put("params",array);
-
-        }
-
-
-        JSONObject responseJSONObj = null;
-
-        try{
-            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
-                    new UsernamePasswordCredentials(userName,password));
-            StringEntity myString = new StringEntity(json.toString());
-            System.out.println(json.toString());
-            HttpPost myhttppost = new HttpPost(post);
-            myhttppost.setEntity(myString);
-
-            HttpResponse myresponse = httpclient.execute(myhttppost);
-            HttpEntity myentity2 = myresponse.getEntity();
-            System.out.println(myresponse.getStatusLine());
-            if(myentity2 != null){
-                System.out.println("Good Response");
-            }
-
-            String retJSON = EntityUtils.toString(myentity2);
-            responseJSONObj = new JSONObject(retJSON);
-
-
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            httpclient.getConnectionManager().shutdown();
-        }
-
-
-        return responseJSONObj;
-    }
-
-    public JSONObject sendRPC(String method) throws JSONException {
-
-        String mainURLL = "127.0.0.1";
-        int portNum = 2770;
-        String userName = "multichainrpc";
-        String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
-        String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
-        String chainName = "tapchain";
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-
-
-        JSONObject json = new JSONObject();
-        json.put("chain_name", chainName);
-        json.put("method", method);
-
-
-        JSONObject responseJSONObj = null;
-
-        try{
-            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
-                    new UsernamePasswordCredentials(userName,password));
-            StringEntity myString = new StringEntity(json.toString());
-            System.out.println(json.toString());
-            HttpPost myhttppost = new HttpPost(post);
-            myhttppost.setEntity(myString);
-
-            HttpResponse myresponse = httpclient.execute(myhttppost);
-            HttpEntity myentity2 = myresponse.getEntity();
-            System.out.println(myresponse.getStatusLine());
-            if(myentity2 != null){
-                System.out.println("Good Response");
-            }
-
-            String retJSON = EntityUtils.toString(myentity2);
-            responseJSONObj = new JSONObject(retJSON);
-
-
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            httpclient.getConnectionManager().shutdown();
-        }
-
-
-
-
-
-        String ID = responseJSONObj.getString("id");
-
-
-        JSONObject json2 = new JSONObject();
-        json.put("id",ID);
-        json.put("chain_name",chainName);
-        json.put("method",method);
-
-
-        String con = "connect";
-        JSONArray array = new JSONArray();
-        array.optString(1,"connect");
-        array.optString(2,"send");
-        array.optString(3,"receive");
-        json.put("params",array);
-
-
-
-        JSONObject response2JSONObj = null;
-
-        try{
-            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
-                    new UsernamePasswordCredentials(userName,password));
-            StringEntity myString = new StringEntity(json2.toString());
-            System.out.println(json2.toString());
-            HttpPost myhttppost = new HttpPost(post);
-            myhttppost.setEntity(myString);
-
-            HttpResponse myresponse = httpclient.execute(myhttppost);
-            HttpEntity myentity2 = myresponse.getEntity();
-            System.out.println(myresponse.getStatusLine());
-            if(myentity2 != null){
-                System.out.println("Good Response");
-            }
-
-            String retJSON = EntityUtils.toString(myentity2);
-            response2JSONObj = new JSONObject(retJSON);
-
-
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            httpclient.getConnectionManager().shutdown();
-        }
-
-
-        return responseJSONObj;
-    }
 }
