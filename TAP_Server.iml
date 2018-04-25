@@ -9,6 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="TAP_Server" level="project" />
-    <orderEntry type="library" name="MultiChainJavaAPI-0.4.11-SNAPSHOT" level="application" />
+    <orderEntry type="library" name="sqlite-jdbc-3.21.0" level="application" />
   </component>
 </module>
