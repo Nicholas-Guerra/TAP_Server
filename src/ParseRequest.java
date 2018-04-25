@@ -1,6 +1,8 @@
 import com.sun.org.apache.bcel.internal.generic.JsrInstruction;
 import jdk.nashorn.internal.parser.JSONParser;
 
+import multichain.command.MultiChainCommand;
+import multichain.command.builders.QueryBuilderGrant;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,13 +33,18 @@ import javax.xml.crypto.Data;
 
 
 
-
 public class ParseRequest {
 
     Database database;
 
+    MultiChainCommand chain = new MultiChainCommand("localhost","port","login" ,"pas");
+
+
+
     public ParseRequest(Database database) {
         this.database = database;
+        chain.getGrantCommand().grant("dasfs",1);
+        chain.getRawTransactionCommand().
     }
 
     public void parseLogin(JSONObject request, PrintWriter out){
