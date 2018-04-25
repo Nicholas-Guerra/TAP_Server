@@ -43,8 +43,7 @@ public class ParseRequest {
 
     public ParseRequest(Database database) {
         this.database = database;
-        chain.getGrantCommand().grant("dasfs",1);
-        chain.getRawTransactionCommand().
+
     }
 
     public void parseLogin(JSONObject request, PrintWriter out){
