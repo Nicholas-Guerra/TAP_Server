@@ -129,8 +129,8 @@ public class ParseRequest {
                 String token = String.valueOf(value);
 
                 ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                " VALUES ('" + userName + "','" + hashedPassword + "','" + results.get("result") + "',' ',' ','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " ')" +
-                " SELECT last_insert_rowid()");
+                " VALUES ('" + userName + "','" + hashedPassword + "','" + results.get("result") + "',' ',' ','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " ')" );
+                //" SELECT last_insert_rowid()");
                 resultSet.next();
 
                 JSONObject jsonObject = new JSONObject();
