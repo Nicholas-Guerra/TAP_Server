@@ -518,7 +518,7 @@ public class ParseRequest {
 
 
 
-        String ID = responseJSONObj.getJSONObject("result").getString("address");
+        String ID = responseJSONObj.getJSONArray("result").getJSONObject(0).getString("address");
 
 
         JSONObject json2 = new JSONObject();
