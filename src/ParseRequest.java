@@ -538,6 +538,7 @@ public class ParseRequest {
         JSONObject response2JSONObj = null;
 
         try{
+            httpclient = new DefaultHttpClient();
             httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
                     new UsernamePasswordCredentials(userName,password));
             StringEntity myString = new StringEntity(json2.toString());
