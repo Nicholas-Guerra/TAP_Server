@@ -517,13 +517,13 @@ public class ParseRequest {
 
 
 
-        String ID = responseJSONObj.getString("id");
+        String ID = responseJSONObj.getString("address");
 
 
         JSONObject json2 = new JSONObject();
         json2.put("id",ID);
         json2.put("chain_name",chainName);
-        json2.put("method",method);
+        json2.put("method", "grant");
 
 
         String con = "connect";
