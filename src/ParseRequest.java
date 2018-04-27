@@ -521,9 +521,9 @@ public class ParseRequest {
 
 
         JSONObject json2 = new JSONObject();
-        json.put("id",ID);
-        json.put("chain_name",chainName);
-        json.put("method",method);
+        json2.put("id",ID);
+        json2.put("chain_name",chainName);
+        json2.put("method",method);
 
 
         String con = "connect";
@@ -531,7 +531,7 @@ public class ParseRequest {
         array.put("connect");
         array.put("send");
         array.put("receive");
-        json.put("params",array);
+        json2.put("params",array);
 
 
 
