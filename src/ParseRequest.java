@@ -496,8 +496,9 @@ public class ParseRequest {
             }
 
             String retJSON = EntityUtils.toString(myentity2);
-            System.out.println(EntityUtils.toString(myentity2));
+            //System.out.println(EntityUtils.toString(myentity2));
             responseJSONObj = new JSONObject(retJSON);
+            System.out.println(responseJSONObj.toString());
 
 
         } catch (ClientProtocolException e) {
