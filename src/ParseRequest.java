@@ -464,17 +464,17 @@ public class ParseRequest {
 
     public JSONObject sendRPC(String method) throws JSONException {
 
-        String mainURLL = "127.0.0.1";
+        String mainURLL = "localhost";
         int portNum = 2770;
         String userName = "multichainrpc";
         String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
-        String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
+        String post = "http://localhost:2770";
         String chainName = "tapchain";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
         JSONObject json = new JSONObject();
-        json.put("chain_name", chainName);
+        json.put("id", chainName);
         json.put("method", method);
 
 
@@ -496,6 +496,7 @@ public class ParseRequest {
             }
 
             String retJSON = EntityUtils.toString(myentity2);
+            System.out.println(EntityUtils.toString(myentity2));
             responseJSONObj = new JSONObject(retJSON);
 
 
@@ -547,6 +548,7 @@ public class ParseRequest {
             HttpResponse myresponse = httpclient.execute(myhttppost);
             HttpEntity myentity2 = myresponse.getEntity();
             System.out.println(myresponse.getStatusLine());
+            System.out.println(myentity2.toString());
             if(myentity2 != null){
                 System.out.println("Good Response");
             }
