@@ -528,9 +528,9 @@ public class ParseRequest {
 
         String con = "connect";
         JSONArray array = new JSONArray();
-        array.optString(1,"connect");
-        array.optString(2,"send");
-        array.optString(3,"receive");
+        array.put("connect");
+        array.put("send");
+        array.put("receive");
         json.put("params",array);
 
 
