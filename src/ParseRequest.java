@@ -128,10 +128,10 @@ public class ParseRequest {
                 int value = rand.nextInt(1000000);
                 String token = String.valueOf(value);
 
-                ResultSet resultSet = database.runQuery("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber)" +
-                " VALUES ('" + userName + "','" + hashedPassword + "','" + results.get("result") + "',' ',' ','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + " ')" );
+                database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber, token)" +
+                " VALUES ('" + userName + "','" + hashedPassword + "','" + results.get("result") + "',' ',' ','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "')" );
                 //" SELECT last_insert_rowid()");
-                resultSet.next();
+
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "verified")
