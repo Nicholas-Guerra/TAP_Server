@@ -123,7 +123,7 @@ public class ParseRequest {
                 double result = start + (random * (end - start));
                 double balance = result;
 
-                JSONObject results = sendRPC("createkeypairs"); //fill parameter list, just add in method name
+                JSONObject results = sendRPC("getnewaddress"); //fill parameter list, just add in method name
                 Random rand = new Random();
                 int value = rand.nextInt(1000000);
                 String token = String.valueOf(value);
@@ -518,7 +518,7 @@ public class ParseRequest {
 
 
 
-        String ID = responseJSONObj.getJSONArray("result").getJSONObject(0).getString("address");
+       /* String ID = responseJSONObj.getJSONArray("result").getJSONObject(0).getString("address");
 
 
         JSONObject json2 = new JSONObject();
@@ -570,7 +570,7 @@ public class ParseRequest {
             e.printStackTrace();
         } finally {
             httpclient.getConnectionManager().shutdown();
-        }
+        }*/
 
 
         return responseJSONObj;
