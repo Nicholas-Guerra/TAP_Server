@@ -416,7 +416,8 @@ public class ParseRequest {
         if(null != params){
             JSONArray array = new JSONArray();
             for(int i = 1; i <= params.size(); i++) {
-                array.optString(params.indexOf(i));
+                //array.optString(params.indexOf(i));
+                array.put(params.get(i));
             }
             json.put("params",array);
 
