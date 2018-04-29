@@ -524,8 +524,7 @@ public class ParseRequest {
         JSONArray params = new JSONArray();
         params.put(address)
                 .put("TAPcoin")
-                .put(amount)
-                .put(0.01);
+                .put(amount);
 
         json2.put("params", params);
 
