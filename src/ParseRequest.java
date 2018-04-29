@@ -337,7 +337,7 @@ public class ParseRequest {
 
             ResultSet resultSet = database.runQuery("SELECT token " +
                                                 " FROM AccountInfo " +
-                                                " WHERE userName = " + to);
+                                                " WHERE userName = '" + to + "'");
 
             resultSet.next();
             String token = resultSet.getString("token");
