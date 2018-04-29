@@ -160,6 +160,9 @@ public class ParseRequest {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+
+        System.out.println("Finished new user");
     }
 
     public void parseTransaction(JSONObject request, PrintWriter out) {
@@ -501,7 +504,7 @@ public class ParseRequest {
             }
 
             String retJSON = EntityUtils.toString(myentity2);
-            //System.out.println(EntityUtils.toString(myentity2));
+
             responseJSONObj = new JSONObject(retJSON);
             System.out.println(responseJSONObj.toString());
 
@@ -519,63 +522,6 @@ public class ParseRequest {
             httpclient.getConnectionManager().shutdown();
         }
 
-
-
-
-
-       /* String ID = responseJSONObj.getJSONArray("result").getJSONObject(0).getString("address");
-
-
-        JSONObject json2 = new JSONObject();
-        json2.put("id",ID);
-        json2.put("chain_name",chainName);
-        json2.put("method", "grant");
-
-
-        String con = "connect";
-        JSONArray array = new JSONArray();
-        array.put("connect");
-        array.put("send");
-        array.put("receive");
-        json2.put("params",array);
-
-
-
-        JSONObject response2JSONObj = null;
-
-        try{
-            httpclient = new DefaultHttpClient();
-            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
-                    new UsernamePasswordCredentials(userName,password));
-            StringEntity myString = new StringEntity(json2.toString());
-            System.out.println(json2.toString());
-            HttpPost myhttppost = new HttpPost(post);
-            myhttppost.setEntity(myString);
-
-            HttpResponse myresponse = httpclient.execute(myhttppost);
-            HttpEntity myentity2 = myresponse.getEntity();
-            System.out.println(myresponse.getStatusLine());
-            System.out.println(myentity2.toString());
-            if(myentity2 != null){
-                System.out.println("Good Response");
-            }
-
-            String retJSON = EntityUtils.toString(myentity2);
-            response2JSONObj = new JSONObject(retJSON);
-
-
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            httpclient.getConnectionManager().shutdown();
-        }*/
 
 
         return responseJSONObj;
