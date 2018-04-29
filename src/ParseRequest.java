@@ -403,10 +403,10 @@ public class ParseRequest {
 
     public JSONObject sendFrom(String from, String to, String amount) throws JSONException {
 
-        String mainURLL = "127.0.0.1";
-        int portNum = 2770;
+        String mainURLL = "localhost";
+        int portNum = 6456;
         String userName = "multichainrpc";
-        String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
+        String password = "9iFLwr8Rydj6RBWeDBQX2aTsa3PXDrqtkHxskvDttgUv";
         String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
         String chainName = "tapchain1.0";
         DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -465,9 +465,9 @@ public class ParseRequest {
     public String getNewAddress(double amount) throws JSONException {
 
         String mainURLL = "localhost";
-        int portNum = 2770;
+        int portNum = 6456;
         String userName = "multichainrpc";
-        String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
+        String password = "9iFLwr8Rydj6RBWeDBQX2aTsa3PXDrqtkHxskvDttgUv";
         String post = "http://localhost:2770";
         String chainName = "tapchain1.0";
         String method = "getnewaddress";
