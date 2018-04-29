@@ -148,6 +148,11 @@ public class ParseRequest {
                 jsonObject.put("status", "error")
                         .put("message", "Email already in use");
                 out.println(jsonObject.toString());
+            } else {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("status", "error")
+                        .put("message", "Unknown");
+                out.println(jsonObject.toString());
             }
 
         } catch (JSONException e) {
