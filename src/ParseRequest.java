@@ -520,10 +520,10 @@ public class ParseRequest {
 
         JSONObject json2 = new JSONObject();
         json2.put("id", chainName);
-        json2.put("method", "issuemore");
+        json2.put("method", "issue");
         JSONArray params = new JSONArray();
         params.put(address)
-                .put("TPC")
+                .put("TAPcoin")
                 .put(amount)
                 .put(0.01);
 
