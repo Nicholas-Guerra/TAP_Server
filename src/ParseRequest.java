@@ -301,7 +301,7 @@ public class ParseRequest {
             ResultSet  users = database.runQuery(
                     "SELECT userName " +
                                 " FROM AccountInfo " +
-                                " WHERE user LIKE " + search);
+                                " WHERE userName LIKE " + search);
 
 
             JSONObject object;
