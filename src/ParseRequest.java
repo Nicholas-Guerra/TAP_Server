@@ -297,7 +297,7 @@ public class ParseRequest {
         String search = null;
         try {
             search = request.getString("Search");
-            search = "%" + search + "%";
+            search = "'%" + search + "%'";
             ResultSet  users = database.runQuery(
                     "SELECT userName " +
                                 " FROM AccountInfo " +
