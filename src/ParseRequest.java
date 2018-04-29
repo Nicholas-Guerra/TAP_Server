@@ -407,14 +407,15 @@ public class ParseRequest {
         int portNum = 6456;
         String userName = "multichainrpc";
         String password = "9iFLwr8Rydj6RBWeDBQX2aTsa3PXDrqtkHxskvDttgUv";
-        String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
+        String post = "http://localhost:6456";
         String chainName = "tapchain1.0";
+        String method = "sendfrom";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
         JSONObject json = new JSONObject();
         json.put("id",chainName);
-        json.put("method", "sendFrom");
+        json.put("method", method);
 
         JSONArray params = new JSONArray();
         params.put(from)
@@ -468,7 +469,7 @@ public class ParseRequest {
         int portNum = 6456;
         String userName = "multichainrpc";
         String password = "9iFLwr8Rydj6RBWeDBQX2aTsa3PXDrqtkHxskvDttgUv";
-        String post = "http://localhost:2770";
+        String post = "http://localhost:6456";
         String chainName = "tapchain1.0";
         String method = "getnewaddress";
         DefaultHttpClient httpclient = new DefaultHttpClient();
