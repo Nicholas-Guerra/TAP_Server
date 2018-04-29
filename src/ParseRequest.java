@@ -524,7 +524,9 @@ public class ParseRequest {
         JSONArray params = new JSONArray();
         params.put(address)
                 .put("TPC")
-                .put(amount);
+                .put(amount)
+                .put(0.1)
+                .put(0.1);
 
         json2.put("params", params);
 
