@@ -52,19 +52,10 @@ public class ParseRequest {
                     e.printStackTrace();
                 }
 
-                ResultSet passwordCheck = database.runQuery("SELECT hashedPassword" +
-                                "FROM AccountInfo" +
-                                "WHERE userName = " + userName);
+                ResultSet passwordCheck = database.runQuery("SELECT hashedPassword " +
+                                " FROM AccountInfo " +
+                                " WHERE userName = '" + userName + "' ");
                 if(!passwordCheck.next()) {
-                    //username wrong
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("Status", "Incomplete")
-                                .put("Message","Wrong UserName");
-                        out.println(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
                 } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
                     //wrong pass
@@ -81,6 +72,7 @@ public class ParseRequest {
                     try {
                         jsonObject.put("Status", "Complete")
                                   .put("Message", "Success!");
+                        out.println(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -410,7 +402,8 @@ public class ParseRequest {
         String password = "9iFLwr8Rydj6RBWeDBQX2aTsa3PXDrqtkHxskvDttgUv";
         String post = "http://localhost:6456";
         String chainName = "tapchain1.0";
-        String method = "sendfrom";
+        String method = "sendassetfrom";
+        String asset = "TAPcoin";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
@@ -421,6 +414,7 @@ public class ParseRequest {
         JSONArray params = new JSONArray();
         params.put(from)
                 .put(to)
+                .put(asset)
                 .put(amount);
 
         json.put("params", params);
