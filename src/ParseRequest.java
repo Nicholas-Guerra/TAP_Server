@@ -16,6 +16,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
@@ -113,7 +114,7 @@ public class ParseRequest {
                 double end = 100;
                 double random = new Random().nextDouble();
                 double result = start + (random * (end - start));
-                double balance = result;
+                double balance =  new Double(new DecimalFormat("#.##").format(result));
 
                 String address = getNewAddress(balance); //fill parameter list, just add in method name
                 Random rand = new Random();
