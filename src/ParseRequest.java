@@ -115,14 +115,13 @@ public class ParseRequest {
                 double result = start + (random * (end - start));
                 double balance = result;
 
-                JSONObject results = getNewAddress(); //fill parameter list, just add in method name
+                String address = getNewAddress(balance); //fill parameter list, just add in method name
                 Random rand = new Random();
                 int value = rand.nextInt(1000000);
                 String token = String.valueOf(value);
 
-                database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,cryptoPrivateKey,cryptoPublicKey,balance,email,phoneNumber, token)" +
-                " VALUES ('" + userName + "','" + hashedPassword + "','" + results.get("result") + "',' ',' ','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "')" );
-                //" SELECT last_insert_rowid()");
+                database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,balance,email,phoneNumber, token)" +
+                " VALUES ('" + userName + "','" + hashedPassword + "','" + address + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "')" );
 
 
                 JSONObject jsonObject = new JSONObject();
@@ -409,7 +408,7 @@ public class ParseRequest {
         String userName = "multichainrpc";
         String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
         String post = "http://tapchain:DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx@127.0.0.1:2770";
-        String chainName = "tapchain";
+        String chainName = "tapchain1.0";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
@@ -463,14 +462,14 @@ public class ParseRequest {
         return responseJSONObj;
     }
 
-    public JSONObject getNewAddress() throws JSONException {
+    public String getNewAddress(double amount) throws JSONException {
 
         String mainURLL = "localhost";
         int portNum = 2770;
         String userName = "multichainrpc";
         String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
         String post = "http://localhost:2770";
-        String chainName = "tapchain";
+        String chainName = "tapchain1.0";
         String method = "getnewaddress";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
@@ -512,12 +511,59 @@ public class ParseRequest {
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+
+
+        String address = responseJSONObj.getString("result");
+
+        JSONObject json2 = new JSONObject();
+        json2.put("id", chainName);
+        json2.put("method", "issue");
+        JSONArray params = new JSONArray();
+        params.put(address)
+                .put("TPC")
+                .put(amount);
+
+        json2.put("params", params);
+
+
+        JSONObject response2JSONObj;
+
+        try{
+            httpclient.getCredentialsProvider().setCredentials( new AuthScope(mainURLL,portNum),
+                    new UsernamePasswordCredentials(userName,password));
+            StringEntity myString = new StringEntity(json2.toString());
+            System.out.println(json2.toString());
+            HttpPost myhttppost = new HttpPost(post);
+            myhttppost.setEntity(myString);
+
+            HttpResponse myresponse = httpclient.execute(myhttppost);
+            HttpEntity myentity2 = myresponse.getEntity();
+            System.out.println(myresponse.getStatusLine());
+            if(myentity2 != null){
+                System.out.println("Good Response");
+            }
+
+            String retJSON = EntityUtils.toString(myentity2);
+
+            response2JSONObj = new JSONObject(retJSON);
+            System.out.println(response2JSONObj.toString());
+
+
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         } finally {
             httpclient.getConnectionManager().shutdown();
         }
 
-
-
-        return responseJSONObj;
+        System.out.println(address);
+        return address;
     }
 }
