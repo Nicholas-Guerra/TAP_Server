@@ -143,16 +143,24 @@ public class ParseRequest {
                 jsonObject.put("status", "error")
                         .put("message", "UserName already in use");
                 out.println(jsonObject.toString());
+
+                System.out.println("user check");
+
             }else if (emailCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "error")
                         .put("message", "Email already in use");
                 out.println(jsonObject.toString());
+
+                System.out.println("email check");
+
             } else {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("status", "error")
                         .put("message", "Unknown");
                 out.println(jsonObject.toString());
+
+                System.out.println("unknown");
             }
 
         } catch (JSONException e) {
