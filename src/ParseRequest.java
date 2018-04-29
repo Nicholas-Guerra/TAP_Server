@@ -144,11 +144,11 @@ public class ParseRequest {
                         .put("message", "UserName already in use");
                 out.println(jsonObject.toString());
             }else if (emailCheck.isBeforeFirst()) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("status", "error")
-                            .put("message", "Email already in use");
-                    out.println(jsonObject.toString());
-                }
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("status", "error")
+                        .put("message", "Email already in use");
+                out.println(jsonObject.toString());
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -299,9 +299,9 @@ public class ParseRequest {
             search = request.getString("Search");
             search = "%" + search + "%";
             ResultSet  users = database.runQuery(
-                    "SELECT userName" +
-                                "FROM AccountInfo" +
-                                "WHERE user LIKE " + search);
+                    "SELECT userName " +
+                                " FROM AccountInfo " +
+                                " WHERE user LIKE " + search);
 
 
             JSONObject object;
@@ -336,8 +336,8 @@ public class ParseRequest {
             Long time = System.currentTimeMillis();
 
             ResultSet resultSet = database.runQuery("SELECT token " +
-                                                "FROM AccountInfo " +
-                                                "WHERE userName = " + to);
+                                                " FROM AccountInfo " +
+                                                " WHERE userName = " + to);
 
             resultSet.next();
             String token = resultSet.getString("token");
