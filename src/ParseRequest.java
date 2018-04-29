@@ -1,6 +1,3 @@
-import com.sun.org.apache.bcel.internal.generic.JsrInstruction;
-import jdk.nashorn.internal.parser.JSONParser;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,16 +16,11 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.net.ssl.HttpsURLConnection;
-import javax.xml.crypto.Data;
-
 
 
 public class ParseRequest {
@@ -123,7 +115,7 @@ public class ParseRequest {
                 double result = start + (random * (end - start));
                 double balance = result;
 
-                JSONObject results = sendRPC("getnewaddress"); //fill parameter list, just add in method name
+                JSONObject results = getNewAddress(); //fill parameter list, just add in method name
                 Random rand = new Random();
                 int value = rand.nextInt(1000000);
                 String token = String.valueOf(value);
@@ -144,7 +136,7 @@ public class ParseRequest {
                         .put("message", "UserName already in use");
                 out.println(jsonObject.toString());
 
-                System.out.println("user check");
+
 
             }else if (emailCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
@@ -152,7 +144,6 @@ public class ParseRequest {
                         .put("message", "Email already in use");
                 out.println(jsonObject.toString());
 
-                System.out.println("email check");
 
             } else {
                 JSONObject jsonObject = new JSONObject();
@@ -160,7 +151,6 @@ public class ParseRequest {
                         .put("message", "Unknown");
                 out.println(jsonObject.toString());
 
-                System.out.println("unknown");
             }
 
         } catch (JSONException e) {
@@ -170,7 +160,6 @@ public class ParseRequest {
         }
 
 
-        System.out.println("Finished new user");
     }
 
     public void parseTransaction(JSONObject request, PrintWriter out) {
@@ -178,37 +167,36 @@ public class ParseRequest {
         try {
 
             JSONObject send = new JSONObject();
-            String senderID = request.getString("senderID");
-            String receiverID = request.getString("receiverID");
+            String sender = request.getString("sender");
+            String receiver = request.getString("receiver");
             Double amount = request.getDouble("amount");
             Long time = System.currentTimeMillis();
             String status = "pending";
 
-            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + senderID + "'");
+            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + sender + "'");
             resultSet.next();
 
             if(resultSet.getDouble("amount") >= amount) {
 //change amount to balance
-                database.runUpdate("INSERT into Transactions (senderID, receiever, amount, time, status)" +
+                database.runUpdate("INSERT into Transactions (senderID, receiver, amount, time, status)" +
 
-                        "Values( '" + senderID + "','" + receiverID + "', '" + amount + "','" + time + "', '" + status + "')");
+                        " Values( '" + sender + "','" + receiver + "', '" + amount + "','" + time + "', '" + status + "')");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount - '" + amount + "'" +
-                        " WHERE userName = '" + senderID + "'");
+                        " WHERE userName = '" + sender + "'");
 
                 database.runUpdate("UPDATE AccountInfo SET amount = amount + '" + amount + "'" +
-                        " WHERE userName = '" + receiverID + "'");
+                        " WHERE userName = '" + receiver + "'");
 
-                ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + senderID + "'");
-                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiverID + "'");
+                ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + sender + "'");
+                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
+                BlocksenderCryptID.next();
+                BlockreceiverCryptID.next();
+
                 String senderCryptID = BlocksenderCryptID.getString("cryptoID");
                 String receiverCryptID = BlockreceiverCryptID.getString("cryptoID");
-                List<String> rpcRequestList = new ArrayList();
 
-                rpcRequestList.add(senderCryptID);
-                rpcRequestList.add(receiverCryptID);
-                rpcRequestList.add(Double.toString(amount));
-                JSONObject transactionBlock = sendRPC(senderCryptID,"sendfrom",rpcRequestList);
+                JSONObject transactionBlock = sendFrom(senderCryptID, receiverCryptID, Double.toString(amount));
                 //call rpc here. i will need to query the database with the userName to get the ID
 
 
@@ -414,7 +402,7 @@ public class ParseRequest {
 
     }
 
-    public JSONObject sendRPC(String id, String method, List<String> params) throws JSONException {
+    public JSONObject sendFrom(String from, String to, String amount) throws JSONException {
 
         String mainURLL = "127.0.0.1";
         int portNum = 2770;
@@ -426,18 +414,15 @@ public class ParseRequest {
 
 
         JSONObject json = new JSONObject();
-        json.put("id",id);
-        json.put("chain_name",chainName);
-        json.put("method",method);
-        if(null != params){
-            JSONArray array = new JSONArray();
-            for(int i = 1; i <= params.size(); i++) {
-                //array.optString(params.indexOf(i));
-                array.put(params.get(i));
-            }
-            json.put("params",array);
+        json.put("id",chainName);
+        json.put("method", "sendFrom");
 
-        }
+        JSONObject params = new JSONObject();
+        params.put("from-address", from)
+                .put("to-address", to)
+                .put("amount", amount);
+
+        json.put("params", params);
 
 
         JSONObject responseJSONObj = null;
@@ -478,7 +463,7 @@ public class ParseRequest {
         return responseJSONObj;
     }
 
-    public JSONObject sendRPC(String method) throws JSONException {
+    public JSONObject getNewAddress() throws JSONException {
 
         String mainURLL = "localhost";
         int portNum = 2770;
@@ -486,6 +471,7 @@ public class ParseRequest {
         String password = "DptN427z6BB2wPhmB43d4R74SG5KRL93AwUkxfzATQgx";
         String post = "http://localhost:2770";
         String chainName = "tapchain";
+        String method = "getnewaddress";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
 
