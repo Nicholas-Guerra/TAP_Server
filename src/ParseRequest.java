@@ -52,19 +52,10 @@ public class ParseRequest {
                     e.printStackTrace();
                 }
 
-                ResultSet passwordCheck = database.runQuery("SELECT hashedPassword" +
-                                "FROM AccountInfo" +
-                                "WHERE userName = " + userName);
+                ResultSet passwordCheck = database.runQuery("SELECT hashedPassword " +
+                                " FROM AccountInfo " +
+                                " WHERE userName = '" + userName + "' ");
                 if(!passwordCheck.next()) {
-                    //username wrong
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("Status", "Incomplete")
-                                .put("Message","Wrong UserName");
-                        out.println(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
                 } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
                     //wrong pass
@@ -81,6 +72,7 @@ public class ParseRequest {
                     try {
                         jsonObject.put("Status", "Complete")
                                   .put("Message", "Success!");
+                        out.println(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
