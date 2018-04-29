@@ -417,10 +417,10 @@ public class ParseRequest {
         json.put("id",chainName);
         json.put("method", "sendFrom");
 
-        JSONObject params = new JSONObject();
-        params.put("from-address", from)
-                .put("to-address", to)
-                .put("amount", amount);
+        JSONArray params = new JSONArray();
+        params.put(from)
+                .put(to)
+                .put(amount);
 
         json.put("params", params);
 
