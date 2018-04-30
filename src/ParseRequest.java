@@ -295,7 +295,7 @@ public class ParseRequest {
             search = request.getString("Search");
             search = "'%" + search + "%'";
             ResultSet  users = database.runQuery(
-                    "SELECT userName " +
+                    "SELECT userName, token " +
                                 " FROM AccountInfo " +
                                 " WHERE userName LIKE " + search);
 
@@ -303,7 +303,8 @@ public class ParseRequest {
             JSONObject object;
             while (users.next()) {
                 object = new JSONObject();
-                object.put("userName", users.getString("userName"));
+                object.put("userName", users.getString("userName"))
+                        .put("token", users.getString("token"));
                 array.put(object);
 
             }
@@ -326,20 +327,16 @@ public class ParseRequest {
 
         JSONObject send = new JSONObject();
         try {
-            String from = request.getString("from");
-            String to = request.getString("to");
+            String fromName = request.getString("fromName");
+            String toName = request.getString("toName");
+            String token = request.getString("to");
             double amount = request.getDouble("amount");
             Long time = System.currentTimeMillis();
 
-            ResultSet resultSet = database.runQuery("SELECT token " +
-                                                " FROM AccountInfo " +
-                                                " WHERE userName = '" + to + "'");
 
-            resultSet.next();
-            String token = resultSet.getString("token");
 
             database.runUpdate("INSERT into Transactions (senderID, receiverID, amount, time, status)" +
-                    "Values('" + from + "','" + to + "', '" + amount + "','" + String.valueOf(time) + "', 'Waiting')");
+                    "Values('" + fromName + "','" + toName + "', '" + amount + "','" + String.valueOf(time) + "', 'Waiting')");
 
 
             new Thread(new Runnable() {
@@ -356,9 +353,9 @@ public class ParseRequest {
 
                         JSONObject object = new JSONObject();
                         JSONObject data = new JSONObject();
-                        data.put("User Name", "Sally")
-                                .put("Amount", "41.28")
-                                .put("Date", "1523831301798");
+                        data.put("User Name", fromName)
+                                .put("Amount", String.valueOf(amount))
+                                .put("Date", String.valueOf(time));
 
                         object.put("to", token)
                                 .put("data", data);
@@ -387,8 +384,6 @@ public class ParseRequest {
             out.println(send.toString());
 
         } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
 
