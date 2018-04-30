@@ -90,6 +90,7 @@ public class ParseRequest {
             String hashedPassword = request.getString("hashedPassword");
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
+            String token = request.getString("token");
 
 
 
@@ -109,9 +110,7 @@ public class ParseRequest {
                 double balance =  new Double(new DecimalFormat("#.##").format(result));
 
                 String address = getNewAddress(balance); //fill parameter list, just add in method name
-                Random rand = new Random();
-                int value = rand.nextInt(1000000);
-                String token = String.valueOf(value);
+
 
                 database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,balance,email,phoneNumber, token)" +
                 " VALUES ('" + userName + "','" + hashedPassword + "','" + address + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "')" );
