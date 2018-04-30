@@ -70,8 +70,21 @@ public class ParseRequest {
                 } else {
                     JSONObject jsonObject = new JSONObject();
                     try {
+                        ResultSet results = parseUserRefresh(userName);
+
+
                         jsonObject.put("Status", "Complete")
                                   .put("Message", "Success!");
+                        while (results.next()) {
+                            jsonObject= new JSONObject();
+                            jsonObject.put("phoneNumber", results.getString("phoneNumber"))
+                                    .put("token", results.getString("token"))
+                                    .put("email", results.getString("email"))
+                                    .put("balance", results.getDouble("balance"))
+                                    .put("firstName", results.getString("firstName"))
+                                    .put("lastName", results.getString("lastName"));
+
+                        }
                         out.println(jsonObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -304,13 +317,6 @@ public class ParseRequest {
 
 
             JSONObject object;
-            while (users.next()) {
-                object = new JSONObject();
-                object.put("userName", users.getString("userName"))
-                        .put("token", users.getString("token"));
-                array.put(object);
-
-            }
 
             object = new JSONObject();
             object.put("Status", "Complete")
