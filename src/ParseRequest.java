@@ -39,48 +39,38 @@ public class ParseRequest {
         System.out.println("Login Request");
 
             try {
-                String userName = null;
-                try {
-                    userName = request.getString("userName");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                String hashedPassword = null;
-                try {
-                    hashedPassword = request.getString("hashedPassword");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
+                String userName = request.getString("userName");
+                String hashedPassword = request.getString("hashedPassword");
                 ResultSet passwordCheck = database.runQuery("SELECT hashedPassword " +
                                 " FROM AccountInfo " +
                                 " WHERE userName = '" + userName + "' ");
                 if(!passwordCheck.next()) {
-
+                    //wrong username
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Status", "Error")
+                            .put("Message", "Wrong Username");
+                    out.println(jsonObject.toString());
                 } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
                     //wrong pass
                     JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("Status", "Incomplete")
+                        jsonObject.put("Status", "Error")
                                 .put("Message", "Wrong Password");
                         out.println(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
                 } else {
                     JSONObject jsonObject = new JSONObject();
-                    try {
                         jsonObject.put("Status", "Complete")
                                   .put("Message", "Success!");
                         out.println(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }
+    }
 
     public void parseNewUser(JSONObject request, PrintWriter out) {
         System.out.println("New User Request");
