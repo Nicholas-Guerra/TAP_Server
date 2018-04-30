@@ -68,14 +68,15 @@ public class ParseRequest {
 
                     jsonObject.put("Status", "Complete")
                             .put("Message", "Success!");
-                    while (results.next()) {
-
-                        jsonObject.put("phoneNumber", results.getString("phoneNumber"))
+                    results.next();
+                    jsonObject.put("phoneNumber", results.getString("phoneNumber"))
                                 .put("email", results.getString("email"))
                                 .put("balance", results.getDouble("balance"))
                                 .put("firstName", results.getString("firstName"))
                                 .put("lastName", results.getString("lastName"));
-                    }
+
+                    System.out.println(jsonObject.toString());
+
                     out.println(jsonObject.toString());
 
                 }
