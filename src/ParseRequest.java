@@ -71,7 +71,6 @@ public class ParseRequest {
                     while (results.next()) {
 
                         jsonObject.put("phoneNumber", results.getString("phoneNumber"))
-                                .put("token", results.getString("token"))
                                 .put("email", results.getString("email"))
                                 .put("balance", results.getDouble("balance"))
                                 .put("firstName", results.getString("firstName"))
@@ -568,7 +567,7 @@ public class ParseRequest {
     }
 
     public ResultSet parseUserRefresh(String username){
-        return database.runQuery("SELECT email, phoneNumber, token, balance, firstName, lastName" +
+        return database.runQuery("SELECT email, phoneNumber, balance, firstName, lastName" +
                 " FROM AccountInfo" +
                 " WHERE username = '" + username + "'");
 
