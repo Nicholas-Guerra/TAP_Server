@@ -61,6 +61,7 @@ public class ParseRequest {
                     out.println(jsonObject.toString());
 
                 } else {
+                    System.out.println("Success");
                     JSONObject jsonObject = new JSONObject();
 
                     ResultSet results = parseUserRefresh(userName);
@@ -68,7 +69,7 @@ public class ParseRequest {
                     jsonObject.put("Status", "Complete")
                             .put("Message", "Success!");
                     while (results.next()) {
-                        jsonObject= new JSONObject();
+
                         jsonObject.put("phoneNumber", results.getString("phoneNumber"))
                                 .put("token", results.getString("token"))
                                 .put("email", results.getString("email"))
@@ -81,8 +82,11 @@ public class ParseRequest {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+                System.out.println(e.getMessage());
+
             } catch (JSONException e) {
                 e.printStackTrace();
+                System.out.println(e.getMessage());
             }
     }
 
