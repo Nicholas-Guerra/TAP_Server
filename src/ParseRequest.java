@@ -174,30 +174,30 @@ public class ParseRequest {
             Long time = System.currentTimeMillis();
             String status = "pending";
 
-            ResultSet resultSet = database.runQuery("SELECT amount FROM AccountInfo WHERE userName = '" + sender + "'");
+            ResultSet resultSet = database.runQuery("SELECT balance FROM AccountInfo WHERE userName = '" + sender + "'");
             resultSet.next();
 
-            if(resultSet.getDouble("amount") >= amount) {
+            if(resultSet.getDouble("balance") >= amount) {
 //change amount to balance
-                database.runUpdate("INSERT into Transactions (senderID, receiver, amount, time, status)" +
+                database.runUpdate("INSERT into Transactions (senderID, receiverID, amount, time, status)" +
 
                         " Values( '" + sender + "','" + receiver + "', '" + amount + "','" + time + "', '" + status + "')");
 
-                database.runUpdate("UPDATE AccountInfo SET amount = amount - '" + amount + "'" +
+                database.runUpdate("UPDATE AccountInfo SET balance = balance - '" + amount + "'" +
                         " WHERE userName = '" + sender + "'");
 
-                database.runUpdate("UPDATE AccountInfo SET amount = amount + '" + amount + "'" +
+                database.runUpdate("UPDATE AccountInfo SET balance = balance + '" + amount + "'" +
                         " WHERE userName = '" + receiver + "'");
 
                 ResultSet BlocksenderCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + sender + "'");
-                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
                 BlocksenderCryptID.next();
-                BlockreceiverCryptID.next();
-
                 String senderCryptID = BlocksenderCryptID.getString("cryptoID");
+
+                ResultSet BlockreceiverCryptID = database.runQuery("SELECT cryptoID FROM AccountInfo WHERE userName = '" + receiver + "'");
+                BlockreceiverCryptID.next();
                 String receiverCryptID = BlockreceiverCryptID.getString("cryptoID");
 
-                JSONObject transactionBlock = sendFrom(senderCryptID, receiverCryptID, Double.toString(amount));
+                JSONObject transactionBlock = sendFrom(senderCryptID, receiverCryptID, amount);
                 //call rpc here. i will need to query the database with the userName to get the ID
 
 
@@ -398,7 +398,7 @@ public class ParseRequest {
 
     }
 
-    public JSONObject sendFrom(String from, String to, String amount) throws JSONException {
+    public JSONObject sendFrom(String from, String to, Double amount) throws JSONException {
 
         String mainURLL = "localhost";
         int portNum = 6456;
@@ -406,7 +406,7 @@ public class ParseRequest {
         String password = "9iFLwr8Rydj6RBWeDBQX2aTsa3PXDrqtkHxskvDttgUv";
         String post = "http://localhost:6456";
         String chainName = "tapchain1.0";
-        String method = "sendfrom";
+        String method = "sendassetfrom";
         String asset = "TAPcoin";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
