@@ -39,61 +39,53 @@ public class ParseRequest {
         System.out.println("Login Request");
 
             try {
-                String userName = null;
-                try {
-                    userName = request.getString("userName");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                String hashedPassword = null;
-                try {
-                    hashedPassword = request.getString("hashedPassword");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                String userName = request.getString("userName");
 
+                String hashedPassword = request.getString("hashedPassword");
                 ResultSet passwordCheck = database.runQuery("SELECT hashedPassword " +
                                 " FROM AccountInfo " +
                                 " WHERE userName = '" + userName + "' ");
                 if(!passwordCheck.next()) {
 
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("Status", "Error")
+                            .put("Message", "Wrong Username");
+                    out.println(jsonObject.toString());
+
                 } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
                     //wrong pass
                     JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("Status", "Incomplete")
-                                .put("Message", "Wrong Password");
-                        out.println(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+
+                    jsonObject.put("Status", "Error")
+                            .put("Message", "Wrong Password");
+                    out.println(jsonObject.toString());
+
                 } else {
                     JSONObject jsonObject = new JSONObject();
-                    try {
-                        ResultSet results = parseUserRefresh(userName);
 
+                    ResultSet results = parseUserRefresh(userName);
 
-                        jsonObject.put("Status", "Complete")
-                                  .put("Message", "Success!");
-                        while (results.next()) {
-                            jsonObject= new JSONObject();
-                            jsonObject.put("phoneNumber", results.getString("phoneNumber"))
-                                    .put("token", results.getString("token"))
-                                    .put("email", results.getString("email"))
-                                    .put("balance", results.getDouble("balance"))
-                                    .put("firstName", results.getString("firstName"))
-                                    .put("lastName", results.getString("lastName"));
-
-                        }
-                        out.println(jsonObject.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    jsonObject.put("Status", "Complete")
+                            .put("Message", "Success!");
+                    while (results.next()) {
+                        jsonObject= new JSONObject();
+                        jsonObject.put("phoneNumber", results.getString("phoneNumber"))
+                                .put("token", results.getString("token"))
+                                .put("email", results.getString("email"))
+                                .put("balance", results.getDouble("balance"))
+                                .put("firstName", results.getString("firstName"))
+                                .put("lastName", results.getString("lastName"));
                     }
+                    out.println(jsonObject.toString());
+
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }
+    }
+
 
     public void parseNewUser(JSONObject request, PrintWriter out) {
         System.out.println("New User Request");
@@ -128,9 +120,6 @@ public class ParseRequest {
 
                 database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,balance,email,phoneNumber, token, firstName, lastName)" +
                         " VALUES ('" + userName + "','" + hashedPassword + "','" + address + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "','" + firstName + "','" + lastName + "')" );
-
-                 //database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,balance,email,phoneNumber, token)" +
-                 //       " VALUES ('" + userName + "','" + hashedPassword + "','" + address + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "')" );
 
 
                 JSONObject jsonObject = new JSONObject();
