@@ -315,8 +315,15 @@ public class ParseRequest {
                                 " FROM AccountInfo " +
                                 " WHERE userName LIKE " + search);
 
-
             JSONObject object;
+            while (users.next()) {
+                object = new JSONObject();
+                object.put("userName", users.getString("userName"))
+                        .put("token", users.getString("token"));
+                array.put(object);
+
+            }
+
 
             object = new JSONObject();
             object.put("Status", "Complete")
