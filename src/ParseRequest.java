@@ -39,38 +39,48 @@ public class ParseRequest {
         System.out.println("Login Request");
 
             try {
+                String userName = null;
+                try {
+                    userName = request.getString("userName");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String hashedPassword = null;
+                try {
+                    hashedPassword = request.getString("hashedPassword");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-                String userName = request.getString("userName");
-                String hashedPassword = request.getString("hashedPassword");
                 ResultSet passwordCheck = database.runQuery("SELECT hashedPassword " +
                                 " FROM AccountInfo " +
                                 " WHERE userName = '" + userName + "' ");
                 if(!passwordCheck.next()) {
-                    //wrong username
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("Status", "Error")
-                            .put("Message", "Wrong Username");
-                    out.println(jsonObject.toString());
+
                 } else if ( !hashedPassword.equals(passwordCheck.getString("hashedPassword"))) {
                     //wrong pass
                     JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("Status", "Error")
+                    try {
+                        jsonObject.put("Status", "Incomplete")
                                 .put("Message", "Wrong Password");
                         out.println(jsonObject.toString());
-
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     JSONObject jsonObject = new JSONObject();
+                    try {
                         jsonObject.put("Status", "Complete")
                                   .put("Message", "Success!");
                         out.println(jsonObject.toString());
-
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
-    }
+        }
 
     public void parseNewUser(JSONObject request, PrintWriter out) {
         System.out.println("New User Request");
@@ -81,7 +91,8 @@ public class ParseRequest {
             String email = request.getString("email");
             String phoneNumber = request.getString("phoneNumber");
             String token = request.getString("token");
-
+            String firstName = request.getString("firstName");
+            String lastName = request.getString("lastName");
 
 
             ResultSet userCheck = database.runQuery("SELECT userName" +
@@ -102,8 +113,11 @@ public class ParseRequest {
                 String address = getNewAddress(balance); //fill parameter list, just add in method name
 
 
-                database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,balance,email,phoneNumber, token)" +
-                " VALUES ('" + userName + "','" + hashedPassword + "','" + address + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "')" );
+                database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,balance,email,phoneNumber, token, firstName, lastName)" +
+                        " VALUES ('" + userName + "','" + hashedPassword + "','" + address + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "','" + firstName + "','" + lastName + "')" );
+
+                 //database.runUpdate("INSERT INTO AccountInfo(userName, hashedPassword,cryptoID,balance,email,phoneNumber, token)" +
+                 //       " VALUES ('" + userName + "','" + hashedPassword + "','" + address + "','"  + balance + "','" + email + "','" + phoneNumber + "','" + token + "')" );
 
 
                 JSONObject jsonObject = new JSONObject();
@@ -386,7 +400,7 @@ public class ParseRequest {
         String password = "9iFLwr8Rydj6RBWeDBQX2aTsa3PXDrqtkHxskvDttgUv";
         String post = "http://localhost:6456";
         String chainName = "tapchain1.0";
-        String method = "sendassetfrom";
+        String method = "sendfrom";
         String asset = "TAPcoin";
         DefaultHttpClient httpclient = new DefaultHttpClient();
 
@@ -545,5 +559,14 @@ public class ParseRequest {
 
         System.out.println(address);
         return address;
+    }
+
+    public ResultSet parseUserRefresh(String username){
+        return database.runQuery("SELECT email, phoneNumber, token, balance, firstName, lastName" +
+                " FROM AccountInfo" +
+                " WHERE username = '" + username + "'");
+
+
+
     }
 }
