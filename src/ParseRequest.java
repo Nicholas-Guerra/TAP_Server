@@ -174,14 +174,17 @@ public class ParseRequest {
             Long time = System.currentTimeMillis();
             String status = "pending";
 
+            database.runUpdate("INSERT into Transactions (senderID, receiverID, amount, time, status)" +
+                    " Values( '" + sender + "','" + receiver + "', '" + amount + "','" + time + "', '" + status + "')");
+
             ResultSet resultSet = database.runQuery("SELECT balance FROM AccountInfo WHERE userName = '" + sender + "'");
             resultSet.next();
 
             if(resultSet.getDouble("balance") >= amount) {
 //change amount to balance
-                database.runUpdate("INSERT into Transactions (senderID, receiverID, amount, time, status)" +
-
-                        " Values( '" + sender + "','" + receiver + "', '" + amount + "','" + time + "', '" + status + "')");
+                status = "complete";
+                database.runUpdate("INSERT into Transactions (status)" +
+                        " Values( '" + status + "')");
 
                 database.runUpdate("UPDATE AccountInfo SET balance = balance - '" + amount + "'" +
                         " WHERE userName = '" + sender + "'");
@@ -205,6 +208,9 @@ public class ParseRequest {
                 send.put("Status", "Complete");
                 out.println(send.toString());
             } else{
+                status = "incomplete";
+                database.runUpdate("INSERT into Transactions (status)" +
+                        " Values( '" + status + "')");
                 send.put("Status", "Incomplete")
                         .put("Message", "Insufficient funds");
                 out.println(send.toString());
