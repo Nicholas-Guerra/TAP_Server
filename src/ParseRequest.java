@@ -181,7 +181,7 @@ public class ParseRequest {
             resultSet.next();
 
             if(resultSet.getDouble("balance") >= amount) {
-//change amount to balance
+                //change amount to balance
                 status = "complete";
                 database.runUpdate("INSERT into Transactions (status)" +
                         " Values( '" + status + "')");
