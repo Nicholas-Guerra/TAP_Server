@@ -134,7 +134,7 @@ public class ParseRequest {
              else if (userCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("Status", "Error")
-                        .put("message", "UserName already in use");
+                        .put("Message", "UserName already in use");
                 out.println(jsonObject.toString());
 
 
@@ -142,14 +142,14 @@ public class ParseRequest {
             }else if (emailCheck.isBeforeFirst()) {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("Status", "Error")
-                        .put("message", "Email already in use");
+                        .put("Message", "Email already in use");
                 out.println(jsonObject.toString());
 
 
             } else {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("status", "error")
-                        .put("message", "Unknown");
+                jsonObject.put("Status", "error")
+                        .put("Message", "Unknown");
                 out.println(jsonObject.toString());
 
             }
