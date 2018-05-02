@@ -232,9 +232,11 @@ public class ParseRequest {
 
             JSONArray array = new JSONArray();
             JSONObject object;
-
+            Double balance;
+            ResultSet result = database.runQuery("SELECT AccountInfo.balance FROM AccountInfo WHERE AccountInfo.username = '" + userName + "'");
+            balance = result.getDouble("balance");
             ResultSet resultSet = database
-                    .runQuery("SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username" +
+                    .runQuery("SELECT Transactions.receiverID, Transactions.senderID, Transactions.transactionID, Transactions.time, Transactions.status, Transactions.amount, AccountInfo.username AccountInfo.balance" +
                                         " FROM Transactions JOIN AccountInfo" +
                                         " ON Transactions.senderID = AccountInfo.userID" +
                                         " WHERE Transactions.sender != '" + userName  + "'" +
@@ -267,6 +269,7 @@ public class ParseRequest {
             object = new JSONObject();
             object.put("Status", "Complete");
             object.put("array", array);
+            object.put("balance",balance);
             //send current balance
 
             System.out.println(object.toString());
